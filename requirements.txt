@@ -4,4 +4,3 @@ Pillow==9.0.1
 streamlit==1.10.0
 sectionproperties==1.0.7
 matplotlib==3.4.2
-python==3.9.12
