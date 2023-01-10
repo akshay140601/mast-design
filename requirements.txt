@@ -4,4 +4,4 @@ Pillow==9.0.1
 streamlit==1.10.0
 sectionproperties==2.1.4
 matplotlib==3.4.2
-shapely
+shapely==1.8.2
