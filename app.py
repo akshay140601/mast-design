@@ -654,10 +654,21 @@ if feed_actuation == "Cylinder feed":
                 hor_tram_safe = 'No'
                 
             # Extending prediction
+            extending_regressor = pickle.load(open("extending_stack.pkl","rb"))
+            extending_list = [extending, section_2_modulus, mast_depth, section_3_modulus]
+            X_test = pd.DataFrame([extending_list], columns = ['extendingforce', 'Sectionmodulus', 'Mastdepth', 'Sectionmodulus2'])
+            pass_data = X_test[['extendingforce', 'Sectionmodulus', 'Mastdepth', 'Sectionmodulus2']]
+            extending_prediction = extending_regressor.predict(pass_data)
+            extending_prediction_print = extending_prediction.item()
+            extending_prediction_print = int(extending_prediction_print)
+            if extending_prediction_print<yield_limit_check:
+                extending_safe = 'Yes'
+            else:
+                extending_safe = 'No'
             #Code for remaining models
             
             data = [[1, 'Mast Horizontal & MRC Retracting', retract_prediction_print, retract_safe], [3, 'Just about to lift (1.1G Lift Factor)', just_lift_prediction_print, just_lift_safe],
-                    [1, 'Horizontal Tramming (1.5G Vertical Load)', hor_tram_prediction_print, hor_tram_safe]]
+                    [1, 'Horizontal Tramming (1.5G Vertical Load)', hor_tram_prediction_print, hor_tram_safe], [2, 'Mast vertical & MRC Extending', extending_prediction_print, extending_safe]]
             df = pd.DataFrame(data, columns = ['Loc. No.', 'Load case', 'Stress', 'Compliant?'])
             
             col1, col2 = st.columns(2)
@@ -1064,13 +1075,22 @@ elif feed_actuation == 'Motor feed':
                 hor_tram_safe = 'No'
                 
             # Extending prediction
+            extending_regressor = pickle.load(open("extending_stack.pkl","rb"))
+            extending_list = [extending, section_2_modulus, mast_depth, section_3_modulus]
+            X_test = pd.DataFrame([extending_list], columns = ['extendingforce', 'Sectionmodulus', 'Mastdepth', 'Sectionmodulus2'])
+            pass_data = X_test[['extendingforce', 'Sectionmodulus', 'Mastdepth', 'Sectionmodulus2']]
+            extending_prediction = extending_regressor.predict(pass_data)
+            extending_prediction_print = extending_prediction.item()
+            extending_prediction_print = int(extending_prediction_print)
+            if extending_prediction_print<yield_limit_check:
+                extending_safe = 'Yes'
+            else:
+                extending_safe = 'No'
             #Code for remaining models
             
             data = [[1, 'Mast Horizontal & MRC Retracting', retract_prediction_print, retract_safe], [3, 'Just about to lift (1.1G Lift Factor)', just_lift_prediction_print, just_lift_safe],
-                    [1, 'Horizontal Tramming (1.5G Vertical Load)', hor_tram_prediction_print, hor_tram_safe]]
+                    [1, 'Horizontal Tramming (1.5G Vertical Load)', hor_tram_prediction_print, hor_tram_safe], [2, 'Mast vertical & MRC Extending', extending_prediction_print, extending_safe]]
             df = pd.DataFrame(data, columns = ['Loc. No.', 'Load case', 'Stress', 'Compliant?'])
-            
-            col1, col2 = st.columns(2)
             with col1:
                 sf = Image.open('Mast static failure locations.png')
                 st.image(sf, use_column_width=True)
