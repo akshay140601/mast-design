@@ -619,6 +619,7 @@ if feed_actuation == "Cylinder feed":
             pass_data = X_test[['retracting force', 'section modulus (in^3)', 'Overhang (in)']]
             retract_prediction = retract_regressor.predict(pass_data)
             retract_prediction_print = retract_prediction.item()
+            retract_prediction_print = int(retract_prediction_print)
             yield_limit_check = 0.6*yield_limit
             if retract_prediction_print<yield_limit_check:
                 retract_safe = 'Yes'
@@ -633,6 +634,7 @@ if feed_actuation == "Cylinder feed":
             pass_data = X_test[['Weight', 'Sectionmodulus', 'Overhang', 'Mastdepth']]
             just_lift_prediction = just_lift_regressor.predict(pass_data)
             just_lift_prediction_print = just_lift_prediction.item()
+            just_lift_prediction_print = int(just_lift_prediction_print)
             if just_lift_prediction_print<yield_limit_check:
                 just_lift_safe = 'Yes'
             else:
@@ -645,6 +647,7 @@ if feed_actuation == "Cylinder feed":
             pass_data = X_test[['Weight', 'Sectionmodulus', 'Overhang']]
             hor_tram_prediction = hor_tram_regressor.predict(pass_data)
             hor_tram_prediction_print = hor_tram_prediction.item()
+            hor_tram_prediction_print = int(hor_tram_prediction_print)
             if hor_tram_prediction_print<yield_limit_check:
                 hor_tram_safe = 'Yes'
             else:
@@ -1026,6 +1029,7 @@ elif feed_actuation == 'Motor feed':
             pass_data = X_test[['retracting force', 'section modulus (in^3)', 'Overhang (in)']]
             retract_prediction = retract_regressor.predict(pass_data)
             retract_prediction_print = retract_prediction.item()
+            retract_prediction_print = int(retract_prediction_print)
             yield_limit_check = 0.6*yield_limit
             if retract_prediction_print<yield_limit_check:
                 retract_safe = 'Yes'
@@ -1040,6 +1044,7 @@ elif feed_actuation == 'Motor feed':
             pass_data = X_test[['Weight', 'Sectionmodulus', 'Overhang', 'Mastdepth']]
             just_lift_prediction = just_lift_regressor.predict(pass_data)
             just_lift_prediction_print = just_lift_prediction.item()
+            just_lift_prediction_print = int(just_lift_prediction_print)
             if just_lift_prediction_print<yield_limit_check:
                 just_lift_safe = 'Yes'
             else:
@@ -1052,6 +1057,7 @@ elif feed_actuation == 'Motor feed':
             pass_data = X_test[['Weight', 'Sectionmodulus', 'Overhang']]
             hor_tram_prediction = hor_tram_regressor.predict(pass_data)
             hor_tram_prediction_print = hor_tram_prediction.item()
+            hor_tram_prediction_print = int(hor_tram_prediction_print)
             if hor_tram_prediction_print<yield_limit_check:
                 hor_tram_safe = 'Yes'
             else:
