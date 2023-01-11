@@ -30,7 +30,7 @@ st.markdown("<h1 style='text-align: center'>Mast design Automation</h1>", unsafe
 
 regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
 
-feed_actuation = st.sidebar.selectbox("Feed Actuation", ("Cylinder feed", "Motor feed"))
+feed_actuation = st.sidebar.selectbox("Feed Type", ("Cylinder feed", "Motor feed"))
 
 with st.sidebar:
     st.markdown("<h3 style='text-align: center'>IMPORTANT</h3>", unsafe_allow_html=True)
