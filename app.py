@@ -687,7 +687,7 @@ if feed_actuation == "Cylinder feed":
                 extending_safe = 'No'
             
             # Pulldown - Cylinder prediction
-            pulldown_regressor = pickle.load(open("pulldown_cylinder_xgb.pkl","rb"))
+            pulldown_regressor = pickle.load(open("pulldown_cylinder_stack.pkl","rb"))
             pulldown_list = [pulldown*1.2, torque*1.35, ff_plate_thck, ff_plate_height, ff_plate_length, washer_1_thck, washer_2_thck]
             X_test = pd.DataFrame([pulldown_list], columns = ['Pulldownload', 'Rotation', 'FFthickness', 'FFheight', 'Distance', 'Washer1thck',
                                                               'Washer2thck'])
