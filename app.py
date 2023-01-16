@@ -416,7 +416,7 @@ if feed_actuation == "Cylinder feed":
         
     
 
-    col1, col2, col3, col4 = st.columns([1,1.2,1,1])
+    col1, col2, col3, col4, col5 = st.columns([1.5,1.9,1,1,1])
     
     with col1:
         bp1 = Image.open('bottom plate - 1.png')
@@ -443,8 +443,22 @@ if feed_actuation == "Cylinder feed":
         if ff_plate_height.isalpha():
             st.write("Enter a valid number")
         else:
-            pass    
+            pass  
         
+        washer_1_thck = st.text_input("Washer1 thickness")
+        if washer_1_thck.isalpha():
+            st.write("Enter a valid number")
+        else:
+            pass
+        
+    with col5:
+        washer_2_thck = st.text_input("Washer2 thickness")
+        if washer_2_thck.isalpha():
+            st.write("Enter a valid number")
+        else:
+            pass
+        
+
     col1, col2, col3, col4, col5, col6, col7, col8 = st.columns(8)
     
     with col1:
@@ -509,7 +523,8 @@ if feed_actuation == "Cylinder feed":
     if predict:
         variables = [mast_width, mast_depth, A, B, C, D, width, height, thck, r_out, dist_bottoms, plate_thck, plate_height, ff_plate_thck,
                      ff_plate_length, ff_plate_height, angle_plate_width, angle_plate_height, angle_plate_thck, angle_toe_radius, 
-                     angle_root_radius, mast_weight, pulldown, pullback, torque, extending, retracting, yield_limit, youngs_modulus]
+                     angle_root_radius, mast_weight, pulldown, pullback, torque, extending, retracting, yield_limit, youngs_modulus,
+                     washer_1_thck, washer_2_thck]
         
         proceed = 'Yes'
         for i in range(len(variables)):
@@ -556,6 +571,11 @@ if feed_actuation == "Cylinder feed":
             retracting = float(retracting)
             yield_limit = float(yield_limit)
             youngs_modulus = float(youngs_modulus)
+            washer_1_thck = float(washer_1_thck)
+            washer_2_thck = float(washer_2_thck)
+            ff_plate_thck = float(ff_plate_thck)
+            ff_plate_height = float(ff_plate_height)
+            ff_plate_length = float(ff_plate_length)
 
             geometry = steel_sections.rectangular_hollow_section(d = height, b = width, t = thck, r_out = r_out, n_r = 30)
             geometry.create_mesh(mesh_sizes = [0.1])
@@ -665,10 +685,28 @@ if feed_actuation == "Cylinder feed":
                 extending_safe = 'Yes'
             else:
                 extending_safe = 'No'
+            
+            # Pulldown - Cylinder prediction
+            pulldown_regressor = pickle.load(open("pulldown_cylinder_xgb.pkl","rb"))
+            pulldown_list = [pulldown*1.2, torque*1.35, ff_plate_thck, ff_plate_height, ff_plate_length, washer_1_thck, washer_2_thck]
+            X_test = pd.DataFrame([pulldown_list], columns = ['Pulldownload', 'Rotation', 'FFthickness', 'FFheight', 'Distance', 'Washer1thck',
+                                                              'Washer2thck'])
+            pass_data = X_test[['Pulldownload', 'Rotation', 'FFthickness', 'FFheight', 'Distance', 'Washer1thck', 'Washer2thck']]
+            pulldown_prediction = pulldown_regressor.predict(pass_data)
+            pulldown_prediction_print = pulldown_prediction.item()
+            pulldown_prediction_print = int(pulldown_prediction_print)
+            if pulldown_prediction_print<yield_limit_check:
+                pulldown_safe = 'Yes'
+            else:
+                pulldown_safe = 'No'
+            
             #Code for remaining models
             
-            data = [[1, 'Mast Horizontal & MRC Retracting', retract_prediction_print, retract_safe], [3, 'Just about to lift (1.1G Lift Factor)', just_lift_prediction_print, just_lift_safe],
-                    [1, 'Horizontal Tramming (1.5G Vertical Load)', hor_tram_prediction_print, hor_tram_safe], [2, 'Mast vertical & MRC Extending', extending_prediction_print, extending_safe]]
+            data = [[1, 'Mast Horizontal & MRC Retracting', retract_prediction_print, retract_safe], 
+                    [3, 'Just about to lift (1.1G Lift Factor)', just_lift_prediction_print, just_lift_safe],
+                    [1, 'Horizontal Tramming (1.5G Vertical Load)', hor_tram_prediction_print, hor_tram_safe], 
+                    [2, 'Mast vertical & MRC Extending', extending_prediction_print, extending_safe],
+                    [4, 'Vertical Drilling (120% Pulldown and 135% Torque)', pulldown_prediction_print, pulldown_safe]]
             df = pd.DataFrame(data, columns = ['Loc. No.', 'Load case', 'Stress', 'Compliant?'])
             
             col1, col2 = st.columns(2)
