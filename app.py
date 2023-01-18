@@ -39,6 +39,9 @@ with st.sidebar:
     st.write("3. Stress and Young's Modulus values should be entered in psi")
     st.write("4. All inputs are mandatory")
     st.write("5. If you encounter a 'TopologicalError' the entered geometry cannot be constructed. Please enter a valid geometry in that case")
+    st.write("6. Click below button to download data of previous masts for reference")
+    with open("Previous Mast Data.xlsx", "rb") as file:
+        btn = st.download_button("Download", file, file_name = "Previous Mast Data.xlsx")
 
 if feed_actuation == "Cylinder feed":
     
