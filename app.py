@@ -340,48 +340,45 @@ if feed_actuation == "Cylinder feed":
         st.image(cs3, use_column_width=True)
         
     col1, col2, col3, col4, col5, col6, col7 = st.columns([1.5,1.5,1,1,1,1.5,1.5])
+    df = pd.read_excel("Long member cross sections.xlsx")
+    df_2 = pd.read_excel("Angle plate cross sections.xlsx")
     with col1:
-        width = st.text_input("w")
-        if width.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        thck = st.text_input("t")
-        if thck.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
+        width = st.selectbox('w', df.Width.unique())
+        # width = st.text_input("w")
+        # if width.isalpha():
+        #     st.write("Enter a valid number")
+        # else:
+        #     pass
+        height = st.selectbox('h', df.loc[df.Width==width]['Height'].unique())
+        # thck = st.text_input("t")
+        # if thck.isalpha():
+        #     st.write("Enter a valid number")
+        # else:
+        #     pass
         
     with col2:
-        height = st.text_input("h")
-        if height.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        r_out = st.text_input("r")
-        if r_out.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass 
+        thck = st.selectbox('t', df.loc[(df.Width==width) & (df.Height==height)]['Thickness'].unique())
+        # height = st.text_input("h")
+        # if height.isalpha():
+        #     st.write("Enter a valid number")
+        # else:
+        #     pass
         
     with col3:
-        angle_plate_width = st.text_input("b")
-        if angle_plate_width.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        angle_root_radius = st.text_input("rr")
-        if angle_root_radius.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
+        angle_plate_width = st.selectbox('b', df_2.Breadth.unique())
+        # if angle_plate_width.isalpha():
+        #     st.write("Enter a valid number")
+        # else:
+        #     pass
+        angle_plate_height = st.selectbox('d', df_2.loc[df_2.Breadth==angle_plate_width]['Depth'].unique())
+        # angle_root_radius = st.text_input("rr")
+        # if angle_root_radius.isalpha():
+        #     st.write("Enter a valid number")
+        # else:
+        #     pass
         
     with col4:
-        angle_plate_height = st.text_input("d")
-        if angle_plate_height.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
+        angle_plate_thck = st.selectbox('ta', df_2.loc[(df_2.Breadth==angle_plate_width) & (df_2.Depth==angle_plate_height)]['thickness'].unique())
         angle_toe_radius = st.text_input("rt")
         if angle_toe_radius.isalpha():
             st.write("Enter a valid number")
@@ -389,11 +386,12 @@ if feed_actuation == "Cylinder feed":
             pass
     
     with col5: 
-        angle_plate_thck = st.text_input("ta")
-        if angle_plate_thck.isalpha():
+        angle_root_radius = st.text_input("rr")
+        if angle_root_radius.isalpha():
             st.write("Enter a valid number")
         else:
-            pass 
+            pass
+        
         
     with col6:
         plate_thck = st.text_input("pt")
@@ -521,7 +519,7 @@ if feed_actuation == "Cylinder feed":
     predict = col.button('Predict')
     
     if predict:
-        variables = [mast_width, mast_depth, A, B, C, D, width, height, thck, r_out, dist_bottoms, plate_thck, plate_height, ff_plate_thck,
+        variables = [mast_width, mast_depth, A, B, C, D, width, height, thck, dist_bottoms, plate_thck, plate_height, ff_plate_thck,
                      ff_plate_length, ff_plate_height, angle_plate_width, angle_plate_height, angle_plate_thck, angle_toe_radius, 
                      angle_root_radius, mast_weight, pulldown, pullback, torque, extending, retracting, yield_limit, youngs_modulus,
                      washer_1_thck, washer_2_thck]
@@ -554,7 +552,7 @@ if feed_actuation == "Cylinder feed":
             width = float(width)
             height = float(height)
             thck = float(thck)
-            r_out = float(r_out)
+            r_out = 2*thck
             dist_bottoms = float(dist_bottoms)
             plate_thck = float(plate_thck)
             plate_height = float(plate_height)
@@ -832,48 +830,45 @@ elif feed_actuation == 'Motor feed':
         st.image(cs3, use_column_width=True)
         
     col1, col2, col3, col4, col5, col6, col7 = st.columns([1.5,1.5,1,1,1,1.5,1.5])
+    df = pd.read_excel("Long member cross sections.xlsx")
+    df_2 = pd.read_excel("Angle plate cross sections.xlsx")
     with col1:
-        width = st.text_input("w")
-        if width.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        thck = st.text_input("t")
-        if thck.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
+        width = st.selectbox('w', df.Width.unique())
+        # width = st.text_input("w")
+        # if width.isalpha():
+        #     st.write("Enter a valid number")
+        # else:
+        #     pass
+        height = st.selectbox('h', df.loc[df.Width==width]['Height'].unique())
+        # thck = st.text_input("t")
+        # if thck.isalpha():
+        #     st.write("Enter a valid number")
+        # else:
+        #     pass
         
     with col2:
-        height = st.text_input("h")
-        if height.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        r_out = st.text_input("r")
-        if r_out.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass 
+        thck = st.selectbox('t', df.loc[(df.Width==width) & (df.Height==height)]['Thickness'].unique())
+        # height = st.text_input("h")
+        # if height.isalpha():
+        #     st.write("Enter a valid number")
+        # else:
+        #     pass
         
     with col3:
-        angle_plate_width = st.text_input("b")
-        if angle_plate_width.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        angle_root_radius = st.text_input("rr")
-        if angle_root_radius.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
+        angle_plate_width = st.selectbox('b', df_2.Breadth.unique())
+        # if angle_plate_width.isalpha():
+        #     st.write("Enter a valid number")
+        # else:
+        #     pass
+        angle_plate_height = st.selectbox('d', df_2.loc[df_2.Breadth==angle_plate_width]['Depth'].unique())
+        # angle_root_radius = st.text_input("rr")
+        # if angle_root_radius.isalpha():
+        #     st.write("Enter a valid number")
+        # else:
+        #     pass
         
     with col4:
-        angle_plate_height = st.text_input("d")
-        if angle_plate_height.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
+        angle_plate_thck = st.selectbox('ta', df_2.loc[(df_2.Breadth==angle_plate_width) & (df_2.Depth==angle_plate_height)]['thickness'].unique())
         angle_toe_radius = st.text_input("rt")
         if angle_toe_radius.isalpha():
             st.write("Enter a valid number")
@@ -881,11 +876,12 @@ elif feed_actuation == 'Motor feed':
             pass
     
     with col5: 
-        angle_plate_thck = st.text_input("ta")
-        if angle_plate_thck.isalpha():
+        angle_root_radius = st.text_input("rr")
+        if angle_root_radius.isalpha():
             st.write("Enter a valid number")
         else:
-            pass 
+            pass
+        
         
     with col6:
         plate_thck = st.text_input("pt")
@@ -970,7 +966,7 @@ elif feed_actuation == 'Motor feed':
     predict = col.button('Predict')  
     
     if predict:
-        variables = [mast_width, mast_depth, A, B, C, D, width, height, thck, r_out, dist_bottoms, plate_thck, plate_height,
+        variables = [mast_width, mast_depth, A, B, C, D, width, height, thck, dist_bottoms, plate_thck, plate_height,
                      angle_plate_width, angle_plate_height, angle_plate_thck, angle_toe_radius, angle_root_radius, mast_weight,
                      pulldown, pullback, torque, extending, retracting, yield_limit, youngs_modulus]
         
@@ -1002,7 +998,7 @@ elif feed_actuation == 'Motor feed':
             width = float(width)
             height = float(height)
             thck = float(thck)
-            r_out = float(r_out)
+            r_out = 2*thck
             dist_bottoms = float(dist_bottoms)
             plate_thck = float(plate_thck)
             plate_height = float(plate_height)
