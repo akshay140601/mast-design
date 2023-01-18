@@ -519,8 +519,8 @@ if feed_actuation == "Cylinder feed":
     predict = col.button('Predict')
     
     if predict:
-        variables = [mast_width, mast_depth, A, B, C, D, width, height, thck, dist_bottoms, plate_thck, plate_height, ff_plate_thck,
-                     ff_plate_length, ff_plate_height, angle_plate_width, angle_plate_height, angle_plate_thck, angle_toe_radius, 
+        variables = [mast_width, mast_depth, A, B, C, D, dist_bottoms, plate_thck, plate_height, ff_plate_thck,
+                     ff_plate_length, ff_plate_height, angle_toe_radius, 
                      angle_root_radius, mast_weight, pulldown, pullback, torque, extending, retracting, yield_limit, youngs_modulus,
                      washer_1_thck, washer_2_thck]
         
@@ -966,8 +966,8 @@ elif feed_actuation == 'Motor feed':
     predict = col.button('Predict')  
     
     if predict:
-        variables = [mast_width, mast_depth, A, B, C, D, width, height, thck, dist_bottoms, plate_thck, plate_height,
-                     angle_plate_width, angle_plate_height, angle_plate_thck, angle_toe_radius, angle_root_radius, mast_weight,
+        variables = [mast_width, mast_depth, A, B, C, D, dist_bottoms, plate_thck, plate_height,
+                     angle_toe_radius, angle_root_radius, mast_weight,
                      pulldown, pullback, torque, extending, retracting, yield_limit, youngs_modulus]
         
         proceed = 'Yes'
