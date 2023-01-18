@@ -698,13 +698,25 @@ if feed_actuation == "Cylinder feed":
             else:
                 pulldown_safe = 'No'
             
+            # Pullback prediction
+            pullback_regressor = pickle.load(open("pullback_lr.pkl", "rb"))
+            pullback_list = [pullback*1.2, torque*1.35, section_1_modulus]
+            X_test = pd.DataFrame([pullback_list], columns = ['Pullbackload', 'Rotation', 'Sectionmodulus'])
+            pass_data = X_test[['Pullbackload', 'Rotation', 'Sectionmodulus']]
+            pullback_prediction = pullback_regressor.predict(pass_data)
+            pullback_prediction_print = int(pullback_prediction.item())
+            if pullback_prediction_print<yield_limit_check:
+                pullback_safe = 'Yes'
+            else:
+                pullback_safe = 'No'
             #Code for remaining models
             
             data = [[1, 'Mast Horizontal & MRC Retracting', retract_prediction_print, retract_safe], 
                     [3, 'Just about to lift (1.1G Lift Factor)', just_lift_prediction_print, just_lift_safe],
                     [1, 'Horizontal Tramming (1.5G Vertical Load)', hor_tram_prediction_print, hor_tram_safe], 
                     [2, 'Mast vertical & MRC Extending', extending_prediction_print, extending_safe],
-                    [4, 'Vertical Drilling (120% Pulldown and 135% Torque)', pulldown_prediction_print, pulldown_safe]]
+                    [4, 'Vertical Drilling (120% Pulldown and 135% Torque)', pulldown_prediction_print, pulldown_safe],
+                    [5, 'Vertical Drilling (120% Pullback and 135% Torque)', pullback_prediction_print, pullback_safe]]
             df = pd.DataFrame(data, columns = ['Loc. No.', 'Load case', 'Stress', 'Compliant?'])
             
             col1, col2 = st.columns(2)
@@ -1120,10 +1132,25 @@ elif feed_actuation == 'Motor feed':
                 extending_safe = 'Yes'
             else:
                 extending_safe = 'No'
+                
+            # Pullback prediction
+            pullback_regressor = pickle.load(open("pullback_lr.pkl", "rb"))
+            pullback_list = [pullback*1.2, torque*1.35, section_1_modulus]
+            X_test = pd.DataFrame([pullback_list], columns = ['Pullbackload', 'Rotation', 'Sectionmodulus'])
+            pass_data = X_test[['Pullbackload', 'Rotation', 'Sectionmodulus']]
+            pullback_prediction = pullback_regressor.predict(pass_data)
+            pullback_prediction_print = int(pullback_prediction.item())
+            if pullback_prediction_print<yield_limit_check:
+                pullback_safe = 'Yes'
+            else:
+                pullback_safe = 'No'
             #Code for remaining models
             
-            data = [[1, 'Mast Horizontal & MRC Retracting', retract_prediction_print, retract_safe], [3, 'Just about to lift (1.1G Lift Factor)', just_lift_prediction_print, just_lift_safe],
-                    [1, 'Horizontal Tramming (1.5G Vertical Load)', hor_tram_prediction_print, hor_tram_safe], [2, 'Mast vertical & MRC Extending', extending_prediction_print, extending_safe]]
+            data = [[1, 'Mast Horizontal & MRC Retracting', retract_prediction_print, retract_safe], 
+                    [3, 'Just about to lift (1.1G Lift Factor)', just_lift_prediction_print, just_lift_safe],
+                    [1, 'Horizontal Tramming (1.5G Vertical Load)', hor_tram_prediction_print, hor_tram_safe], 
+                    [2, 'Mast vertical & MRC Extending', extending_prediction_print, extending_safe],
+                    [5, 'Vertical Drilling (120% Pullback and 135% Torque)', pullback_prediction_print, pullback_safe]]
             df = pd.DataFrame(data, columns = ['Loc. No.', 'Load case', 'Stress', 'Compliant?'])
             with col1:
                 sf = Image.open('Mast static failure locations.png')
