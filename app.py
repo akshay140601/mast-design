@@ -21,14 +21,18 @@ st.set_page_config(page_title="Mast design", layout="wide")
 
 reduce_header_height_style = """
     <style>
-        div.block-container {padding-top:0rem; padding-bottom:0rem; padding-left:0.5rem; padding-right:0.5rem;}
+        div.block-container {padding-top:0rem; padding-bottom:0rem; padding-left:0.5rem; padding-right:1rem;}
     </style>
 """
 st.markdown(reduce_header_height_style, unsafe_allow_html=True)
+col1, col2, col3 = st.columns([1,12,1])
+with col2:
+    st.markdown("<h1 style='text-align: center'>Mast design Automation</h1>", unsafe_allow_html=True)
+    
+with col3:
+    st.image("sandvik logo.jpg")
 
-st.markdown("<h1 style='text-align: center'>Mast design Automation</h1>", unsafe_allow_html=True)
-
-regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+regex = re.compile('[@_!#$%^&*()<>?/\|}{~:,]')
 
 feed_actuation = st.sidebar.selectbox("Feed Type", ("Cylinder feed", "Motor feed"))
 
@@ -37,11 +41,11 @@ with st.sidebar:
     st.write("1. Length values should be entered in inches")
     st.write("2. Force values should be entered in lbf")
     st.write("3. Stress and Young's Modulus values should be entered in psi")
-    st.write("4. All inputs are mandatory")
+    st.write("4. All inputs are mandatory. Do not use commas")
     st.write("5. If you encounter a 'TopologicalError' the entered geometry cannot be constructed. Please enter a valid geometry in that case")
     st.write("6. Click below button to download data of previous masts for reference")
     with open("Previous Mast Data.xlsx", "rb") as file:
-        btn = st.download_button("Download", file, file_name = "Previous Mast Data.xlsx")
+        btn = st.download_button("Download", file, file_name = "Existing Mast Data.xlsx")
 
 if feed_actuation == "Cylinder feed":
     
@@ -641,11 +645,15 @@ if feed_actuation == "Cylinder feed":
             retract_prediction = retract_regressor.predict(pass_data)
             retract_prediction_print = retract_prediction.item()
             retract_prediction_print = int(retract_prediction_print)
+            retract_variation = 500
+            retract_prediction_print_LL = str(retract_prediction_print - retract_variation)
+            retract_prediction_print_UL = retract_prediction_print + retract_variation
             yield_limit_check = 0.6*yield_limit
-            if retract_prediction_print<yield_limit_check:
+            if retract_prediction_print_UL<yield_limit_check:
                 retract_safe = 'Yes'
             else:
                 retract_safe = 'No'
+            retract_prediction_print_UL = str(retract_prediction_print_UL)
             
             # Just about to lift prediction
             just_lift_regressor = pickle.load(open("just_lift_stack.pkl","rb"))
@@ -656,11 +664,26 @@ if feed_actuation == "Cylinder feed":
             just_lift_prediction = just_lift_regressor.predict(pass_data)
             just_lift_prediction_print = just_lift_prediction.item()
             just_lift_prediction_print = int(just_lift_prediction_print)
-            if just_lift_prediction_print<yield_limit_check:
+            just_lift_variation = 1000
+            just_lift_prediction_print_LL = str(just_lift_prediction_print - just_lift_variation)
+            just_lift_prediction_print_UL = just_lift_prediction_print + just_lift_variation
+            if just_lift_prediction_print_UL<yield_limit_check:
                 just_lift_safe = 'Yes'
             else:
                 just_lift_safe = 'No'
+            just_lift_prediction_print_UL = str(just_lift_prediction_print_UL)
                 
+            # Just about to lift deflection prediction
+            just_lift_deflection_regressor = pickle.load(open("just_lift_stack_deflection.pkl","rb"))
+            just_lift_deflection_list = [mast_weight*1.1, section_3_modulus, mrc_pivot_overhang, mast_depth]
+            X_test = pd.DataFrame([just_lift_deflection_list], columns = ['Weight', 'Sectionmodulus', 'Overhang', 'Mastdepth'])
+            pass_data = X_test[['Weight', 'Sectionmodulus', 'Overhang', 'Mastdepth']]
+            just_lift_deflection_prediction = just_lift_deflection_regressor.predict(pass_data)
+            just_lift_deflection_prediction_print = float('%.3f'%(just_lift_deflection_prediction.item()))
+            just_lift_def_variation = 0.5
+            just_lift_deflection_prediction_print_LL = str('%.3f'%(just_lift_deflection_prediction_print - just_lift_def_variation))
+            just_lift_deflection_prediction_print_UL = str('%.3f'%(just_lift_deflection_prediction_print + just_lift_def_variation))
+        
             # Horizontal tramming prediction
             hor_tram_regressor = pickle.load(open("hor_tram_stack.pkl","rb"))
             hor_tram_list = [mast_weight*1.5, section_1_modulus, D]
@@ -669,10 +692,25 @@ if feed_actuation == "Cylinder feed":
             hor_tram_prediction = hor_tram_regressor.predict(pass_data)
             hor_tram_prediction_print = hor_tram_prediction.item()
             hor_tram_prediction_print = int(hor_tram_prediction_print)
-            if hor_tram_prediction_print<yield_limit_check:
+            hor_tram_variation = 800
+            hor_tram_prediction_print_LL = str(hor_tram_prediction_print - hor_tram_variation)
+            hor_tram_prediction_print_UL = hor_tram_prediction_print + hor_tram_variation
+            if hor_tram_prediction_print_UL<yield_limit_check:
                 hor_tram_safe = 'Yes'
             else:
                 hor_tram_safe = 'No'
+            hor_tram_prediction_print_UL = str(hor_tram_prediction_print_UL)
+                
+            # Horizontal tramming deflection prediction
+            hor_tram_def_regressor = pickle.load(open("hor_tram_stack_deflection.pkl","rb"))
+            hor_tram_def_list = [mast_weight*1.5, section_1_modulus, D]
+            X_test = pd.DataFrame([hor_tram_def_list], columns = ['Weight', 'Sectionmodulus', 'Overhang'])
+            pass_data = X_test[['Weight', 'Sectionmodulus', 'Overhang']]
+            hor_tram_def_prediction = hor_tram_def_regressor.predict(pass_data)
+            hor_tram_def_prediction_print = float('%.3f'%(hor_tram_def_prediction.item()))
+            hor_tram_def_variation = 0.35
+            hor_tram_def_prediction_print_LL = str('%.3f'%(hor_tram_def_prediction_print - hor_tram_def_variation))
+            hor_tram_def_prediction_print_UL = str('%.3f'%(hor_tram_def_prediction_print + hor_tram_def_variation))
                 
             # Extending prediction
             extending_regressor = pickle.load(open("extending_stack.pkl","rb"))
@@ -682,10 +720,14 @@ if feed_actuation == "Cylinder feed":
             extending_prediction = extending_regressor.predict(pass_data)
             extending_prediction_print = extending_prediction.item()
             extending_prediction_print = int(extending_prediction_print)
-            if extending_prediction_print<yield_limit_check:
+            extending_variation = 1100
+            extending_prediction_print_LL = str(extending_prediction_print - extending_variation)
+            extending_prediction_print_UL = extending_prediction_print + extending_variation
+            if extending_prediction_print_UL<yield_limit_check:
                 extending_safe = 'Yes'
             else:
                 extending_safe = 'No'
+            extending_prediction_print_UL = str(extending_prediction_print_UL)
             
             # Pulldown - Cylinder prediction
             pulldown_regressor = pickle.load(open("pulldown_cylinder_stack.pkl","rb"))
@@ -696,10 +738,14 @@ if feed_actuation == "Cylinder feed":
             pulldown_prediction = pulldown_regressor.predict(pass_data)
             pulldown_prediction_print = pulldown_prediction.item()
             pulldown_prediction_print = int(pulldown_prediction_print)
-            if pulldown_prediction_print<yield_limit_check:
+            pulldown_variation = 850
+            pulldown_prediction_print_LL = str(pulldown_prediction_print - pulldown_variation)
+            pulldown_prediction_print_UL = pulldown_prediction_print + pulldown_variation
+            if pulldown_prediction_print_UL<yield_limit_check:
                 pulldown_safe = 'Yes'
             else:
                 pulldown_safe = 'No'
+            pulldown_prediction_print_UL = str(pulldown_prediction_print_UL)
             
             # Pullback prediction
             pullback_regressor = pickle.load(open("pullback_lr.pkl", "rb"))
@@ -708,19 +754,27 @@ if feed_actuation == "Cylinder feed":
             pass_data = X_test[['Pullbackload', 'Rotation', 'Sectionmodulus']]
             pullback_prediction = pullback_regressor.predict(pass_data)
             pullback_prediction_print = int(pullback_prediction.item())
-            if pullback_prediction_print<yield_limit_check:
+            pullback_variation = 750
+            pullback_prediction_print_LL = str(pullback_prediction_print - pullback_variation)
+            pullback_prediction_print_UL = pullback_prediction_print + pullback_variation
+            if pullback_prediction_print_UL<yield_limit_check:
                 pullback_safe = 'Yes'
             else:
                 pullback_safe = 'No'
+            pullback_prediction_print_UL = str(pullback_prediction_print_UL)
+            
             #Code for remaining models
             
-            data = [[1, 'Mast Horizontal & MRC Retracting', retract_prediction_print, retract_safe], 
-                    [3, 'Just about to lift (1.1G Lift Factor)', just_lift_prediction_print, just_lift_safe],
-                    [1, 'Horizontal Tramming (1.5G Vertical Load)', hor_tram_prediction_print, hor_tram_safe], 
-                    [2, 'Mast vertical & MRC Extending', extending_prediction_print, extending_safe],
-                    [4, 'Vertical Drilling (120% Pulldown and 135% Torque)', pulldown_prediction_print, pulldown_safe],
-                    [5, 'Vertical Drilling (120% Pullback and 135% Torque)', pullback_prediction_print, pullback_safe]]
-            df = pd.DataFrame(data, columns = ['Loc. No.', 'Load case', 'Stress', 'Compliant?'])
+            data = [['Mast Horizontal & MRC Retracting', str(1), retract_prediction_print_LL + ' - ' + retract_prediction_print_UL, '-', retract_safe], 
+                    ['Just about to lift (1.1G Lift Factor)', str(3), just_lift_prediction_print_LL + ' - ' + just_lift_prediction_print_UL, just_lift_deflection_prediction_print_LL + ' - ' + just_lift_deflection_prediction_print_UL, just_lift_safe],
+                    ['Horizontal Tramming (1.5G Vertical Load)', str(1), hor_tram_prediction_print_LL + ' - ' + hor_tram_prediction_print_UL, hor_tram_def_prediction_print_LL + ' - ' + hor_tram_def_prediction_print_UL, hor_tram_safe], 
+                    ['Mast vertical & MRC Extending', str(2), extending_prediction_print_LL + ' - ' + extending_prediction_print_UL, '-', extending_safe],
+                    ['Vertical Drilling (120% Pulldown and 135% Torque)', str(4), pulldown_prediction_print_LL + ' - ' + pulldown_prediction_print_UL, '-', pulldown_safe],
+                    ['Vertical Drilling (120% Pullback and 135% Torque)', str(5), pullback_prediction_print_LL + ' - ' + pullback_prediction_print_UL, '-', pullback_safe]]
+            df = pd.DataFrame(data, columns = ['Load case', 'Loc. No.', 'Stress', 'Deflection', 'Compliant?'])
+            
+            st.markdown("<h3 style='text-align: center'>Static compliance</h3>", unsafe_allow_html=True)
+            st.write("")
             
             col1, col2 = st.columns(2)
             with col1:
@@ -1090,11 +1144,15 @@ elif feed_actuation == 'Motor feed':
             retract_prediction = retract_regressor.predict(pass_data)
             retract_prediction_print = retract_prediction.item()
             retract_prediction_print = int(retract_prediction_print)
+            retract_variation = 500
+            retract_prediction_print_LL = str(retract_prediction_print - retract_variation)
+            retract_prediction_print_UL = retract_prediction_print + retract_variation
             yield_limit_check = 0.6*yield_limit
-            if retract_prediction_print<yield_limit_check:
+            if retract_prediction_print_UL<yield_limit_check:
                 retract_safe = 'Yes'
             else:
                 retract_safe = 'No'
+            retract_prediction_print_UL = str(retract_prediction_print_UL)
             
             # Just about to lift prediction
             just_lift_regressor = pickle.load(open("just_lift_stack.pkl","rb"))
@@ -1105,11 +1163,26 @@ elif feed_actuation == 'Motor feed':
             just_lift_prediction = just_lift_regressor.predict(pass_data)
             just_lift_prediction_print = just_lift_prediction.item()
             just_lift_prediction_print = int(just_lift_prediction_print)
-            if just_lift_prediction_print<yield_limit_check:
+            just_lift_variation = 1000
+            just_lift_prediction_print_LL = str(just_lift_prediction_print - just_lift_variation)
+            just_lift_prediction_print_UL = just_lift_prediction_print + just_lift_variation
+            if just_lift_prediction_print_UL<yield_limit_check:
                 just_lift_safe = 'Yes'
             else:
                 just_lift_safe = 'No'
+            just_lift_prediction_print_UL = str(just_lift_prediction_print_UL)
                 
+            # Just about to lift deflection prediction
+            just_lift_deflection_regressor = pickle.load(open("just_lift_stack_deflection.pkl","rb"))
+            just_lift_deflection_list = [mast_weight*1.1, section_3_modulus, mrc_pivot_overhang, mast_depth]
+            X_test = pd.DataFrame([just_lift_deflection_list], columns = ['Weight', 'Sectionmodulus', 'Overhang', 'Mastdepth'])
+            pass_data = X_test[['Weight', 'Sectionmodulus', 'Overhang', 'Mastdepth']]
+            just_lift_deflection_prediction = just_lift_deflection_regressor.predict(pass_data)
+            just_lift_deflection_prediction_print = float('%.3f'%(just_lift_deflection_prediction.item()))
+            just_lift_def_variation = 0.5
+            just_lift_deflection_prediction_print_LL = str('%.3f'%(just_lift_deflection_prediction_print - just_lift_def_variation))
+            just_lift_deflection_prediction_print_UL = str('%.3f'%(just_lift_deflection_prediction_print + just_lift_def_variation))
+        
             # Horizontal tramming prediction
             hor_tram_regressor = pickle.load(open("hor_tram_stack.pkl","rb"))
             hor_tram_list = [mast_weight*1.5, section_1_modulus, D]
@@ -1118,10 +1191,25 @@ elif feed_actuation == 'Motor feed':
             hor_tram_prediction = hor_tram_regressor.predict(pass_data)
             hor_tram_prediction_print = hor_tram_prediction.item()
             hor_tram_prediction_print = int(hor_tram_prediction_print)
-            if hor_tram_prediction_print<yield_limit_check:
+            hor_tram_variation = 800
+            hor_tram_prediction_print_LL = str(hor_tram_prediction_print - hor_tram_variation)
+            hor_tram_prediction_print_UL = hor_tram_prediction_print + hor_tram_variation
+            if hor_tram_prediction_print_UL<yield_limit_check:
                 hor_tram_safe = 'Yes'
             else:
                 hor_tram_safe = 'No'
+            hor_tram_prediction_print_UL = str(hor_tram_prediction_print_UL)
+                
+            # Horizontal tramming deflection prediction
+            hor_tram_def_regressor = pickle.load(open("hor_tram_stack_deflection.pkl","rb"))
+            hor_tram_def_list = [mast_weight*1.5, section_1_modulus, D]
+            X_test = pd.DataFrame([hor_tram_def_list], columns = ['Weight', 'Sectionmodulus', 'Overhang'])
+            pass_data = X_test[['Weight', 'Sectionmodulus', 'Overhang']]
+            hor_tram_def_prediction = hor_tram_def_regressor.predict(pass_data)
+            hor_tram_def_prediction_print = float('%.3f'%(hor_tram_def_prediction.item()))
+            hor_tram_def_variation = 0.35
+            hor_tram_def_prediction_print_LL = str('%.3f'%(hor_tram_def_prediction_print - hor_tram_def_variation))
+            hor_tram_def_prediction_print_UL = str('%.3f'%(hor_tram_def_prediction_print + hor_tram_def_variation))
                 
             # Extending prediction
             extending_regressor = pickle.load(open("extending_stack.pkl","rb"))
@@ -1131,11 +1219,15 @@ elif feed_actuation == 'Motor feed':
             extending_prediction = extending_regressor.predict(pass_data)
             extending_prediction_print = extending_prediction.item()
             extending_prediction_print = int(extending_prediction_print)
-            if extending_prediction_print<yield_limit_check:
+            extending_variation = 1100
+            extending_prediction_print_LL = str(extending_prediction_print - extending_variation)
+            extending_prediction_print_UL = extending_prediction_print + extending_variation
+            if extending_prediction_print_UL<yield_limit_check:
                 extending_safe = 'Yes'
             else:
                 extending_safe = 'No'
-                
+            extending_prediction_print_UL = str(extending_prediction_print_UL)
+                        
             # Pullback prediction
             pullback_regressor = pickle.load(open("pullback_lr.pkl", "rb"))
             pullback_list = [pullback*1.2, torque*1.35, section_1_modulus]
@@ -1143,18 +1235,25 @@ elif feed_actuation == 'Motor feed':
             pass_data = X_test[['Pullbackload', 'Rotation', 'Sectionmodulus']]
             pullback_prediction = pullback_regressor.predict(pass_data)
             pullback_prediction_print = int(pullback_prediction.item())
-            if pullback_prediction_print<yield_limit_check:
+            pullback_variation = 750
+            pullback_prediction_print_LL = str(pullback_prediction_print - pullback_variation)
+            pullback_prediction_print_UL = pullback_prediction_print + pullback_variation
+            if pullback_prediction_print_UL<yield_limit_check:
                 pullback_safe = 'Yes'
             else:
                 pullback_safe = 'No'
+            pullback_prediction_print_UL = str(pullback_prediction_print_UL)
+            
             #Code for remaining models
             
-            data = [[1, 'Mast Horizontal & MRC Retracting', retract_prediction_print, retract_safe], 
-                    [3, 'Just about to lift (1.1G Lift Factor)', just_lift_prediction_print, just_lift_safe],
-                    [1, 'Horizontal Tramming (1.5G Vertical Load)', hor_tram_prediction_print, hor_tram_safe], 
-                    [2, 'Mast vertical & MRC Extending', extending_prediction_print, extending_safe],
-                    [5, 'Vertical Drilling (120% Pullback and 135% Torque)', pullback_prediction_print, pullback_safe]]
-            df = pd.DataFrame(data, columns = ['Loc. No.', 'Load case', 'Stress', 'Compliant?'])
+            data = [['Mast Horizontal & MRC Retracting', str(1), retract_prediction_print_LL + ' - ' + retract_prediction_print_UL, '-', retract_safe], 
+                    ['Just about to lift (1.1G Lift Factor)', str(3), just_lift_prediction_print_LL + ' - ' + just_lift_prediction_print_UL, just_lift_deflection_prediction_print_LL + ' - ' + just_lift_deflection_prediction_print_UL, just_lift_safe],
+                    ['Horizontal Tramming (1.5G Vertical Load)', str(1), hor_tram_prediction_print_LL + ' - ' + hor_tram_prediction_print_UL, hor_tram_def_prediction_print_LL + ' - ' + hor_tram_def_prediction_print_UL, hor_tram_safe], 
+                    ['Mast vertical & MRC Extending', str(2), extending_prediction_print_LL + ' - ' + extending_prediction_print_UL, '-', extending_safe],
+                    ['Vertical Drilling (120% Pullback and 135% Torque)', str(5), pullback_prediction_print_LL + ' - ' + pullback_prediction_print_UL, '-', pullback_safe]]
+            df = pd.DataFrame(data, columns = ['Load case', 'Loc. No.', 'Stress', 'Deflection', 'Compliant?'])
+            
+            col1, col2 = st.columns(2)
             with col1:
                 sf = Image.open('Mast static failure locations.png')
                 st.image(sf, use_column_width=True)
