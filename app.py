@@ -17,7 +17,7 @@ import sectionproperties.pre.library.steel_sections as steel_sections
 import sectionproperties.pre.library.primitive_sections as sections
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Mast design", layout="wide")
+st.set_page_config(page_title="Mast design", layout="wide", page_icon = "sandvik logo.png")
 
 reduce_header_height_style = """
     <style>
@@ -25,12 +25,12 @@ reduce_header_height_style = """
     </style>
 """
 st.markdown(reduce_header_height_style, unsafe_allow_html=True)
-col1, col2, col3 = st.columns([1,12,1])
+col1, col2, col3 = st.columns([1,10,1])
 with col2:
     st.markdown("<h1 style='text-align: center'>Mast design Automation</h1>", unsafe_allow_html=True)
     
 with col3:
-    st.image("sandvik logo.jpg")
+    st.image("logo-sandvik.png")
 
 regex = re.compile('[@_!#$%^&*()<>?/\|}{~:,]')
 
@@ -772,6 +772,11 @@ if feed_actuation == "Cylinder feed":
                     ['Vertical Drilling (120% Pulldown and 135% Torque)', str(4), pulldown_prediction_print_LL + ' - ' + pulldown_prediction_print_UL, '-', pulldown_safe],
                     ['Vertical Drilling (120% Pullback and 135% Torque)', str(5), pullback_prediction_print_LL + ' - ' + pullback_prediction_print_UL, '-', pullback_safe]]
             df = pd.DataFrame(data, columns = ['Load case', 'Loc. No.', 'Stress', 'Deflection', 'Compliant?'])
+            def color_unsafe(val):
+                color = 'red' if val == 'No' else 'green'
+                return f'background-color: {color}'
+            
+            df = df.style.applymap(color_unsafe, subset = ['Compliant?'])
             
             st.markdown("<h3 style='text-align: center'>Static compliance</h3>", unsafe_allow_html=True)
             st.write("")
@@ -1252,6 +1257,11 @@ elif feed_actuation == 'Motor feed':
                     ['Mast vertical & MRC Extending', str(2), extending_prediction_print_LL + ' - ' + extending_prediction_print_UL, '-', extending_safe],
                     ['Vertical Drilling (120% Pullback and 135% Torque)', str(5), pullback_prediction_print_LL + ' - ' + pullback_prediction_print_UL, '-', pullback_safe]]
             df = pd.DataFrame(data, columns = ['Load case', 'Loc. No.', 'Stress', 'Deflection', 'Compliant?'])
+            def color_unsafe(val):
+                color = 'red' if val == 'No' else 'green'
+                return f'background-color: {color}'
+            
+            df = df.style.applymap(color_unsafe, subset = ['Compliant?'])
             
             col1, col2 = st.columns(2)
             with col1:
