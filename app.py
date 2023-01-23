@@ -333,20 +333,23 @@ if feed_actuation == "Cylinder feed":
     
     ## IF NESTED COLUMNS NOT ALLOWED IN HEROKU
     
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns([1.2,1.2,1])
     with col1:
         cs1 = Image.open('cross section - 1.png')
         st.image(cs1, use_column_width=True)
+        st.markdown("<h5 style='text-align: center'>Long member C/S</h5>", unsafe_allow_html=True)
         
     with col2:
         cs2 = Image.open('cross section - 2.png')
         st.image(cs2, use_column_width=True)
+        st.markdown("<h5 style='text-align: center'>Long member with angle plate</h5>", unsafe_allow_html=True)
         
     with col3:
         cs3 = Image.open('cross section - 3.png')
         st.image(cs3, use_column_width=True)
+        st.markdown("<h5 style='text-align: center'>Long member with pivot plates</h5>", unsafe_allow_html=True)
         
-    col1, col2, col3, col4, col5, col6, col7 = st.columns([1.5,1.5,1,1,1,1.5,1.5])
+    col1, col2, col3, col4, col5, col6, col7 = st.columns([0.6,0.6,0.4,0.4,0.4,0.5,0.5])
     df = pd.read_excel("Long member cross sections.xlsx")
     df_2 = pd.read_excel("Angle plate cross sections.xlsx")
     with col1:
@@ -430,6 +433,7 @@ if feed_actuation == "Cylinder feed":
     with col2:
         bp2 = Image.open('bottom plate - 2.png')
         st.image(bp2, use_column_width=True)
+        st.markdown("<h5 style='text-align: center'>Front view</h5>", unsafe_allow_html=True)
                 
     with col3:
         ff_plate_thck = st.text_input("tp")
