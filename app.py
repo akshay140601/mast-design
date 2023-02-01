@@ -41,7 +41,7 @@ with st.sidebar:
     st.write("1. Length values should be entered in inches")
     st.write("2. Force values should be entered in lbf")
     st.write("3. Stress and Young's Modulus values should be entered in psi")
-    st.write("4. All inputs are mandatory. Do not use commas")
+    st.write("4. All inputs are mandatory. Do not use commas. Deflection is always in Loc. 5")
     st.write("5. If you encounter a 'TopologicalError' the entered geometry cannot be constructed. Please enter a valid geometry in that case")
     st.write("6. Click below button to download data of previous masts for reference")
     with open("Previous Mast Data.xlsx", "rb") as file:
@@ -794,7 +794,7 @@ if feed_actuation == "Cylinder feed":
                     ['Horizontal Tramming (1.5G Vertical Load)', str(1), hor_tram_prediction_print_LL + ' - ' + hor_tram_prediction_print_UL, hor_tram_def_prediction_print_LL + ' - ' + hor_tram_def_prediction_print_UL, hor_tram_safe], 
                     ['Mast vertical & MRC Extending', str(2), extending_prediction_print_LL + ' - ' + extending_prediction_print_UL, '-', extending_safe],
                     ['Vertical Drilling (120% Pulldown and 135% Torque)', str(4), pulldown_prediction_print_LL + ' - ' + pulldown_prediction_print_UL, '-', pulldown_safe],
-                    ['Vertical Drilling (120% Pullback and 135% Torque)', str(5), pullback_prediction_print_LL + ' - ' + pullback_prediction_print_UL, '-', pullback_safe]]
+                    ['Vertical Drilling (120% Pullback and 135% Torque)', str(6), pullback_prediction_print_LL + ' - ' + pullback_prediction_print_UL, '-', pullback_safe]]
             df = pd.DataFrame(data, columns = ['Load case', 'Loc. No.', 'Stress', 'Deflection', 'Compliant?'])
             def color_unsafe(val):
                 color = 'red' if val == 'No' else 'green'
@@ -1299,7 +1299,7 @@ elif feed_actuation == 'Motor feed':
                     ['Just about to lift (1.1G Lift Factor)', str(3), just_lift_prediction_print_LL + ' - ' + just_lift_prediction_print_UL, just_lift_deflection_prediction_print_LL + ' - ' + just_lift_deflection_prediction_print_UL, just_lift_safe],
                     ['Horizontal Tramming (1.5G Vertical Load)', str(1), hor_tram_prediction_print_LL + ' - ' + hor_tram_prediction_print_UL, hor_tram_def_prediction_print_LL + ' - ' + hor_tram_def_prediction_print_UL, hor_tram_safe], 
                     ['Mast vertical & MRC Extending', str(2), extending_prediction_print_LL + ' - ' + extending_prediction_print_UL, '-', extending_safe],
-                    ['Vertical Drilling (120% Pullback and 135% Torque)', str(5), pullback_prediction_print_LL + ' - ' + pullback_prediction_print_UL, '-', pullback_safe]]
+                    ['Vertical Drilling (120% Pullback and 135% Torque)', str(6), pullback_prediction_print_LL + ' - ' + pullback_prediction_print_UL, '-', pullback_safe]]
             df = pd.DataFrame(data, columns = ['Load case', 'Loc. No.', 'Stress', 'Deflection', 'Compliant?'])
             def color_unsafe(val):
                 color = 'red' if val == 'No' else 'green'
