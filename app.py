@@ -685,8 +685,18 @@ if feed_actuation == "Cylinder feed":
             just_lift_deflection_prediction = just_lift_deflection_regressor.predict(pass_data)
             just_lift_deflection_prediction_print = float('%.3f'%(just_lift_deflection_prediction.item()))
             just_lift_def_variation = 0.5
-            just_lift_deflection_prediction_print_LL = str('%.3f'%(just_lift_deflection_prediction_print - just_lift_def_variation))
-            just_lift_deflection_prediction_print_UL = str('%.3f'%(just_lift_deflection_prediction_print + just_lift_def_variation))
+            just_lift_deflection_prediction_print_LL = float('%.3f'%(just_lift_deflection_prediction_print - just_lift_def_variation))
+            if just_lift_deflection_prediction_print_LL < 0:
+                just_lift_deflection_prediction_print_LL = 0
+            else:
+                just_lift_deflection_prediction_print_LL = just_lift_deflection_prediction_print_LL
+            just_lift_deflection_prediction_print_UL = float('%.3f'%(just_lift_deflection_prediction_print + just_lift_def_variation))
+            if just_lift_deflection_prediction_print_UL < just_lift_def_variation:
+                just_lift_deflection_prediction_print_UL = just_lift_def_variation
+            else:
+                just_lift_deflection_prediction_print_UL = just_lift_deflection_prediction_print_UL
+            just_lift_deflection_prediction_print_LL = str(just_lift_deflection_prediction_print_LL)
+            just_lift_deflection_prediction_print_UL = str(just_lift_deflection_prediction_print_UL)
         
             # Horizontal tramming prediction
             hor_tram_regressor = pickle.load(open("hor_tram_stack.pkl","rb"))
@@ -713,8 +723,18 @@ if feed_actuation == "Cylinder feed":
             hor_tram_def_prediction = hor_tram_def_regressor.predict(pass_data)
             hor_tram_def_prediction_print = float('%.3f'%(hor_tram_def_prediction.item()))
             hor_tram_def_variation = 0.35
-            hor_tram_def_prediction_print_LL = str('%.3f'%(hor_tram_def_prediction_print - hor_tram_def_variation))
-            hor_tram_def_prediction_print_UL = str('%.3f'%(hor_tram_def_prediction_print + hor_tram_def_variation))
+            hor_tram_def_prediction_print_LL = float('%.3f'%(hor_tram_def_prediction_print - hor_tram_def_variation))
+            if hor_tram_def_prediction_print_LL < 0:
+                hor_tram_def_prediction_print_LL = 0
+            else:
+                hor_tram_def_prediction_print_LL = hor_tram_def_prediction_print_LL
+            hor_tram_def_prediction_print_UL = float('%.3f'%(hor_tram_def_prediction_print + hor_tram_def_variation))
+            if hor_tram_def_prediction_print_UL < hor_tram_def_variation:
+                hor_tram_def_prediction_print_UL = hor_tram_def_variation
+            else:
+                hor_tram_def_prediction_print_UL = hor_tram_def_prediction_print_UL
+            hor_tram_def_prediction_print_LL = str(hor_tram_def_prediction_print_LL)
+            hor_tram_def_prediction_print_UL = str(hor_tram_def_prediction_print_UL)
                 
             # Extending prediction
             extending_regressor = pickle.load(open("extending_stack.pkl","rb"))
@@ -1189,8 +1209,18 @@ elif feed_actuation == 'Motor feed':
             just_lift_deflection_prediction = just_lift_deflection_regressor.predict(pass_data)
             just_lift_deflection_prediction_print = float('%.3f'%(just_lift_deflection_prediction.item()))
             just_lift_def_variation = 0.5
-            just_lift_deflection_prediction_print_LL = str('%.3f'%(just_lift_deflection_prediction_print - just_lift_def_variation))
-            just_lift_deflection_prediction_print_UL = str('%.3f'%(just_lift_deflection_prediction_print + just_lift_def_variation))
+            just_lift_deflection_prediction_print_LL = float('%.3f'%(just_lift_deflection_prediction_print - just_lift_def_variation))
+            if just_lift_deflection_prediction_print_LL < 0:
+                just_lift_deflection_prediction_print_LL = 0
+            else:
+                just_lift_deflection_prediction_print_LL = just_lift_deflection_prediction_print_LL
+            just_lift_deflection_prediction_print_UL = float('%.3f'%(just_lift_deflection_prediction_print + just_lift_def_variation))
+            if just_lift_deflection_prediction_print_UL < just_lift_def_variation:
+                just_lift_deflection_prediction_print_UL = just_lift_def_variation
+            else:
+                just_lift_deflection_prediction_print_UL = just_lift_deflection_prediction_print_UL
+            just_lift_deflection_prediction_print_LL = str(just_lift_deflection_prediction_print_LL)
+            just_lift_deflection_prediction_print_UL = str(just_lift_deflection_prediction_print_UL)
         
             # Horizontal tramming prediction
             hor_tram_regressor = pickle.load(open("hor_tram_stack.pkl","rb"))
@@ -1217,8 +1247,18 @@ elif feed_actuation == 'Motor feed':
             hor_tram_def_prediction = hor_tram_def_regressor.predict(pass_data)
             hor_tram_def_prediction_print = float('%.3f'%(hor_tram_def_prediction.item()))
             hor_tram_def_variation = 0.35
-            hor_tram_def_prediction_print_LL = str('%.3f'%(hor_tram_def_prediction_print - hor_tram_def_variation))
-            hor_tram_def_prediction_print_UL = str('%.3f'%(hor_tram_def_prediction_print + hor_tram_def_variation))
+            hor_tram_def_prediction_print_LL = float('%.3f'%(hor_tram_def_prediction_print - hor_tram_def_variation))
+            if hor_tram_def_prediction_print_LL < 0:
+                hor_tram_def_prediction_print_LL = 0
+            else:
+                hor_tram_def_prediction_print_LL = hor_tram_def_prediction_print_LL
+            hor_tram_def_prediction_print_UL = float('%.3f'%(hor_tram_def_prediction_print + hor_tram_def_variation))
+            if hor_tram_def_prediction_print_UL < hor_tram_def_variation:
+                hor_tram_def_prediction_print_UL = hor_tram_def_variation
+            else:
+                hor_tram_def_prediction_print_UL = hor_tram_def_prediction_print_UL
+            hor_tram_def_prediction_print_LL = str(hor_tram_def_prediction_print_LL)
+            hor_tram_def_prediction_print_UL = str(hor_tram_def_prediction_print_UL)
                 
             # Extending prediction
             extending_regressor = pickle.load(open("extending_stack.pkl","rb"))
