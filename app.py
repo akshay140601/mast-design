@@ -813,6 +813,82 @@ if feed_actuation == "Cylinder feed":
             with col2:
                 st.table(df)
                 
+            #Code for fatigue models and cumulative damage calculation
+            
+            m_160 = 5
+            m_90 = 3
+            A_160 = (160**m_160)*2000000      #FAT 160 calculated for 2E+6 number of cycles
+            A_90 = (90**m_90)*2000000
+            oc = 64000          #Number of occurences for mast raising cycle
+            # asr_160 = int(math.exp((1/m_160) * math.log(A_160/oc)))     #Allowable stress range for the 
+            # asr_90 = int(math.exp((1/m_90) * math.log(A_90/oc)))
+            
+            
+            #Location number 1
+            
+            #Just about to lift - Loc - 1 prediction
+            
+            just_lift_loc_1_regressor = pickle.load(open("just_lift_loc_1_xgb.pkl", "rb"))
+            just_lift_loc_1_list = [mast_weight*1.1, section_2_modulus, mast_depth, mrc_pivot_overhang]
+            X_test = pd.DataFrame([just_lift_loc_1_list], columns = ['Mastweight', 'Sectionmodulus', 'Mastdepth', 'Overhang'])
+            pass_data = X_test[['Mastweight', 'Sectionmodulus', 'Mastdepth', 'Overhang']]
+            just_lift_loc_1_prediction = just_lift_loc_1_regressor.predict(pass_data)
+            just_lift_loc_1_prediction_print = int(just_lift_loc_1_prediction.item())
+            
+            #Extending - Loc - 1 prediction
+            
+            extending_loc_1_regressor = pickle.load(open("extending_loc_1_stack.pkl", "rb"))
+            extending_loc_1_list = [extending, section_2_modulus, mast_depth]
+            X_test = pd.DataFrame([extending_loc_1_list], columns = ['Extendingforce', 'Sectionmodulus', 'Mastdepth'])
+            pass_data = X_test[['Extendingforce', 'Sectionmodulus', 'Mastdepth']]
+            extending_loc_1_prediction = extending_loc_1_regressor.predict(pass_data)
+            extending_loc_1_prediction_print = int(extending_loc_1_prediction.item())
+            
+            wsr_loc_1 = extending_loc_1_prediction_print - just_lift_loc_1_prediction_print
+            wsr_loc_1_mpa = int(wsr_loc_1/145)
+            n_loc_1 = A_160/(wsr_loc_1_mpa**m_160)
+            cd_loc_1 = float(oc/n_loc_1)
+            cd_loc_1_print = '%.2f'%cd_loc_1
+            cd_loc_1_variation = 0.07
+            if cd_loc_1 < 0.07:
+                cd_loc_1_LL = str(0)
+            else:
+                cd_loc_1_LL = cd_loc_1 - 0.07
+                cd_loc_1_LL = str('%.2f'%cd_loc_1_LL)
+                
+            cd_loc_1_UL = cd_loc_1 + 0.07
+            
+            if cd_loc_1_UL > 1:
+                loc_1_safe = "No"
+            else:
+                loc_1_safe = "Yes"
+                
+            cd_loc_1_UL = str('%.2f'%cd_loc_1_UL)
+            
+            #Location number 2
+            
+            #Retracting - Loc - 2 prediction
+            
+            
+            #Extending - Loc - 2 prediction
+            
+            
+            data_fatigue = [["Mast Raising-Lowering Cycle", str(1) + ' (Material stress)', cd_loc_1_LL + '-' + cd_loc_1_UL, loc_1_safe]]
+            df_fatigue = pd.DataFrame(data_fatigue, columns = ['Cycle', 'Loc. No.', 'Cumulative Damage', 'Compliant?'])
+            df_fatigue = df_fatigue.style.applymap(color_unsafe, subset = ['Compliant?'])
+            
+            st.write("")
+            st.markdown("<h3 style='text-align: center'>Fatigue compliance</h3>", unsafe_allow_html=True)
+            st.write("")
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                ff = Image.open('Mast fatigue failure locations.png')
+                st.image(ff, use_column_width=True)
+                
+            with col2:
+                st.table(df_fatigue)
+                
             
 
 elif feed_actuation == 'Motor feed':
@@ -1314,6 +1390,17 @@ elif feed_actuation == 'Motor feed':
                 
             with col2:
                 st.table(df)
+                
+            #Code for fatigue models and cumulative damage calculation
+            
+            st.write("")
+            st.markdown("<h3 style='text-align: center'>Fatigue compliance</h3>", unsafe_allow_html=True)
+            st.write("")
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                ff = Image.open('Mast fatigue failure locations.png')
+                st.image(ff, use_column_width=True)
  
 hide_st_style = """
             <style>
