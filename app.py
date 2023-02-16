@@ -6,16 +6,13 @@ Created on Mon Jan  9 12:18:07 2023
 """
 
 import pandas as pd
-import numpy as np
 import streamlit as st
 import pickle
 import re
 from PIL import Image
-#from sectionproperties.pre.geometry import CompoundGeometry
 from sectionproperties.analysis.section import Section
 import sectionproperties.pre.library.steel_sections as steel_sections
 import sectionproperties.pre.library.primitive_sections as sections
-import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Mast design", layout="wide", page_icon = "sandvik logo.png")
 
@@ -334,10 +331,10 @@ if feed_actuation == "Cylinder feed":
     
     st.write("")
 
-    col1, col2, col3, col4, col5, col6, col7, col8 = st.columns(8)
+    col1, col2, col3, col4, col5, col6, col7 = st.columns([1.3,1,1,1,1,1,1])
     
     with col1:
-        mast_weight = st.text_input("Mast weight (kg)")
+        mast_weight = st.text_input("Mast Assembly Weight (kg)")
         if mast_weight.isalpha():
             st.write("Enter a valid number")
         else:
@@ -379,15 +376,8 @@ if feed_actuation == "Cylinder feed":
             pass
         
     with col7:
-        yield_limit = st.text_input("Yield stress")
+        yield_limit = st.text_input("Material Yield stress")
         if yield_limit.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        
-    with col8:
-        youngs_modulus = st.text_input("Young's Modulus")
-        if youngs_modulus.isalpha():
             st.write("Enter a valid number")
         else:
             pass
@@ -417,7 +407,7 @@ if feed_actuation == "Cylinder feed":
     if predict:
         variables = [mast_width, mast_depth, A, B, C, D, dist_bottoms, plate_thck, plate_height, ff_plate_thck,
                      ff_plate_length, ff_plate_height, angle_toe_radius, 
-                     angle_root_radius, mast_weight, pulldown, pullback, torque, extending, retracting, yield_limit, youngs_modulus,
+                     angle_root_radius, mast_weight, pulldown, pullback, torque, extending, retracting, yield_limit,
                      washer_1_thck, washer_2_thck]
         
         proceed = 'Yes'
@@ -472,7 +462,6 @@ if feed_actuation == "Cylinder feed":
             extending = float(extending)
             retracting = float(retracting)
             yield_limit = float(yield_limit)
-            youngs_modulus = float(youngs_modulus)
             washer_1_thck = float(washer_1_thck)
             washer_2_thck = float(washer_2_thck)
             ff_plate_thck = float(ff_plate_thck)
@@ -871,6 +860,7 @@ elif feed_actuation == 'Motor feed':
         else:
             pass
 
+    st.write("")
     col1, col2, col3 = st.columns(3)
     
     with col1:
@@ -970,11 +960,13 @@ elif feed_actuation == 'Motor feed':
             pass 
         
     ## Enter code for sections
+    st.write("")
+    st.write("")
     
-    col1, col2, col3, col4, col5, col6, col7, col8 = st.columns(8)
+    col1, col2, col3, col4, col5, col6, col7 = st.columns([1.3,1,1,1,1,1,1])
     
     with col1:
-        mast_weight = st.text_input("Mast weight (kg)")
+        mast_weight = st.text_input("Mast Assembly weight (kg)")
         if mast_weight.isalpha():
             st.write("Enter a valid number")
         else:
@@ -1022,20 +1014,33 @@ elif feed_actuation == 'Motor feed':
         else:
             pass
         
-    with col8:
-        youngs_modulus = st.text_input("Young's Modulus")
-        if youngs_modulus.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
+    
+    st.write("")
         
     _,_,_,_,_,_,_,_,_,_,_,_,_, col, _,_,_,_,_,_,_,_,_,_,_,_,_ = st.columns(27)
-    predict = col.button('Predict')  
+    
+    predict_style = """
+        <style>
+            div.stButton > button:first-child {
+                background-color: #ff6d00;
+                color: #fff;
+                height: 3rem;
+                width: 6rem;
+                font-size: 20px;
+                text-align: center;
+                margin: -1rem -1rem -1rem -1rem;
+                }
+        </style>
+    """
+    
+    with col:
+        st.markdown(predict_style, unsafe_allow_html=True)
+        predict = st.button('PREDICT')  
     
     if predict:
         variables = [mast_width, mast_depth, A, B, C, D, dist_bottoms, plate_thck, plate_height,
                      angle_toe_radius, angle_root_radius, mast_weight,
-                     pulldown, pullback, torque, extending, retracting, yield_limit, youngs_modulus]
+                     pulldown, pullback, torque, extending, retracting, yield_limit]
         
         proceed = 'Yes'
         for i in range(len(variables)):
@@ -1044,6 +1049,14 @@ elif feed_actuation == 'Motor feed':
                 _,_,_, col, _,_,_ = st.columns(7)
                 with col:
                     st.write("Please check all the inputs")
+                    hide_st_style = """
+                                <style>
+                                #MainMenu {visibility: hidden;}
+                                footer {visibility: hidden;}
+                                header {visibility: hidden;}
+                                </style>
+                                """
+                    st.markdown(hide_st_style, unsafe_allow_html=True)
                 st.stop()
             
             else:
@@ -1081,7 +1094,6 @@ elif feed_actuation == 'Motor feed':
             extending = float(extending)
             retracting = float(retracting)
             yield_limit = float(yield_limit)
-            youngs_modulus = float(youngs_modulus)
 
             geometry = steel_sections.rectangular_hollow_section(d = height, b = width, t = thck, r_out = r_out, n_r = 30)
             geometry.create_mesh(mesh_sizes = [0.1])
@@ -1283,8 +1295,70 @@ elif feed_actuation == 'Motor feed':
                 
             with col2:
                 st.table(df)
-                
+            
             #Code for fatigue models and cumulative damage calculation
+            
+            m_160 = 5
+            m_90 = 3
+            A_160 = (160**m_160)*2000000      #FAT 160 calculated for 2E+6 number of cycles
+            A_90 = (90**m_90)*2000000
+            oc = 64000          #Number of occurences for mast raising cycle
+            # asr_160 = int(math.exp((1/m_160) * math.log(A_160/oc)))     #Allowable stress range for the 
+            # asr_90 = int(math.exp((1/m_90) * math.log(A_90/oc)))
+            
+            
+            #Location number 1
+            
+            #Just about to lift - Loc - 1 prediction
+            
+            just_lift_loc_1_regressor = pickle.load(open("just_lift_loc_1_xgb.pkl", "rb"))
+            just_lift_loc_1_list = [mast_weight*1.1, section_2_modulus, mast_depth, mrc_pivot_overhang]
+            X_test = pd.DataFrame([just_lift_loc_1_list], columns = ['Mastweight', 'Sectionmodulus', 'Mastdepth', 'Overhang'])
+            pass_data = X_test[['Mastweight', 'Sectionmodulus', 'Mastdepth', 'Overhang']]
+            just_lift_loc_1_prediction = just_lift_loc_1_regressor.predict(pass_data)
+            just_lift_loc_1_prediction_print = int(just_lift_loc_1_prediction.item())
+            
+            #Extending - Loc - 1 prediction
+            
+            extending_loc_1_regressor = pickle.load(open("extending_loc_1_stack.pkl", "rb"))
+            extending_loc_1_list = [extending, section_2_modulus, mast_depth]
+            X_test = pd.DataFrame([extending_loc_1_list], columns = ['Extendingforce', 'Sectionmodulus', 'Mastdepth'])
+            pass_data = X_test[['Extendingforce', 'Sectionmodulus', 'Mastdepth']]
+            extending_loc_1_prediction = extending_loc_1_regressor.predict(pass_data)
+            extending_loc_1_prediction_print = int(extending_loc_1_prediction.item())
+            
+            wsr_loc_1 = extending_loc_1_prediction_print - just_lift_loc_1_prediction_print
+            wsr_loc_1_mpa = int(wsr_loc_1/145)
+            n_loc_1 = A_160/(wsr_loc_1_mpa**m_160)
+            cd_loc_1 = float(oc/n_loc_1)
+            cd_loc_1_print = '%.2f'%cd_loc_1
+            cd_loc_1_variation = 0.07
+            if cd_loc_1 < 0.07:
+                cd_loc_1_LL = str(0)
+            else:
+                cd_loc_1_LL = cd_loc_1 - 0.07
+                cd_loc_1_LL = str('%.2f'%cd_loc_1_LL)
+                
+            cd_loc_1_UL = cd_loc_1 + 0.07
+            
+            if cd_loc_1_UL > 1:
+                loc_1_safe = "No"
+            else:
+                loc_1_safe = "Yes"
+                
+            cd_loc_1_UL = str('%.2f'%cd_loc_1_UL)
+            
+            #Location number 2
+            
+            #Retracting - Loc - 2 prediction
+            
+            
+            #Extending - Loc - 2 prediction
+            
+            
+            data_fatigue = [["Mast Raising-Lowering Cycle", str(1) + ' (Material stress)', cd_loc_1_LL + '-' + cd_loc_1_UL, loc_1_safe]]
+            df_fatigue = pd.DataFrame(data_fatigue, columns = ['Cycle', 'Loc. No.', 'Cumulative Damage', 'Compliant?'])
+            df_fatigue = df_fatigue.style.applymap(color_unsafe, subset = ['Compliant?'])
             
             st.write("")
             st.markdown("<h3 style='text-align: center'>Fatigue compliance</h3>", unsafe_allow_html=True)
@@ -1294,6 +1368,9 @@ elif feed_actuation == 'Motor feed':
             with col1:
                 ff = Image.open('Mast fatigue failure locations.png')
                 st.image(ff, use_column_width=True)
+                
+            with col2:
+                st.table(df_fatigue)
  
 hide_st_style = """
             <style>
