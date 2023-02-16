@@ -21,20 +21,58 @@ st.set_page_config(page_title="Mast design", layout="wide", page_icon = "sandvik
 
 reduce_header_height_style = """
     <style>
-        div.block-container {padding-top:0rem; padding-bottom:0rem; padding-left:0.5rem; padding-right:1rem;}
+        div.block-container {padding-top:0rem; padding-bottom:0rem; padding-left:0.5rem; padding-right:1rem; margin: -1rem -1rem -1rem -1rem;}
     </style>
 """
 st.markdown(reduce_header_height_style, unsafe_allow_html=True)
+
+pattern_style = """
+    <style> 
+        div.header {
+        background: #0099ff;
+        -webkit-clip-path: polygon(16% 0%, 83% 0%, 88% 100%, 100% 100%, 10% 100%);  
+        clip-path: polygon(16% 0%, 83% 0%, 88% 100%, 100% 100%, 10% 100%);  
+        font-size: 1.770833vw;  
+        color: #fff;  
+        text-align: center;
+        margin: -1rem -1rem -1rem -1rem;
+        }
+    </style>
+"""
+st.markdown(pattern_style, unsafe_allow_html=True)
+
 col1, col2, col3 = st.columns([1,10,1])
 with col2:
-    st.markdown("<h1 style='text-align: center'>Mast design Automation</h1>", unsafe_allow_html=True)
-    
+
+    st.markdown("<div class = 'header'><h2 style = 'text-align: center; color: #fff; row-gap: 0rem'>MAST DESIGN AUTOMATION</h2></div>", unsafe_allow_html=True)
 with col3:
     st.image("logo-sandvik.png")
+    
+hr_line_style = """
+    <style>
+        <hr style = "height: 10px; border: none; color: #0099ff; background-color: #0099ff;"/>
+    </style>
+"""
+st.markdown("""<hr style = "height: 6px; border: none; color: #0099ff; background-color: #0099ff; margin: -0.3rem -1.5rem -1rem -1rem"/>""", unsafe_allow_html=True)
 
+st.write("")
 regex = re.compile('[@_!#$%^&*()<>?/\|}{~:,]')
 
 feed_actuation = st.sidebar.selectbox("Feed Type", ("Cylinder feed", "Motor feed"))
+
+download_style = """
+    <style>
+        div.stDownloadButton > button:first-child {
+            background-color: #ff6d00;
+            color: #fff;
+            height: 3rem;
+            width: 8rem;
+            font-size: 20px;
+            text-align: center;
+            margin: -1rem;
+            }
+    </style>
+"""
 
 with st.sidebar:
     st.markdown("<h3 style='text-align: center'>IMPORTANT</h3>", unsafe_allow_html=True)
@@ -44,8 +82,11 @@ with st.sidebar:
     st.write("4. All inputs are mandatory. Do not use commas. Deflection is always in Loc. 5")
     st.write("5. If you encounter a 'TopologicalError' the entered geometry cannot be constructed. Please enter a valid geometry in that case")
     st.write("6. Click below button to download data of previous masts for reference")
-    with open("Previous Mast Data.xlsx", "rb") as file:
-        btn = st.download_button("Download", file, file_name = "Existing Mast Data.xlsx")
+    _,col,_ = st.columns(3)
+    with col:
+        with open("Previous Mast Data.xlsx", "rb") as file:
+            st.markdown(download_style, unsafe_allow_html=True)
+            btn = st.download_button("DOWNLOAD", file, file_name = "Existing Mast Data.xlsx")
 
 if feed_actuation == "Cylinder feed":
     
@@ -135,6 +176,8 @@ if feed_actuation == "Cylinder feed":
         else:
             pass
         
+    st.write("")
+        
 
 # _,_,_,_,_,_,_,_,_,_,_,_,_, col, _,_,_,_,_,_,_,_,_,_,_,_,_ = st.columns(27)
 # Next = col.button('Next')
@@ -153,185 +196,6 @@ if feed_actuation == "Cylinder feed":
     with col3:
         st.markdown("<h5 style='text-align: center'>C/S - 3 (Pivot region)</h5>", unsafe_allow_html=True)
     
-    # col1, col2, col3 = st.columns(3)
-    # col1_1, col1_2 = col1.columns([1, 1])
-    # col2_1, col2_2 = col2.columns([1, 1])
-    # col3_1, col3_2 = col3.columns([1, 1])
-    
-    # with col1_1:
-    #     cs1 = Image.open('cross section - 1.png')
-    #     st.image(cs1, use_column_width=True)
-    
-    # col1_2_1, col1_2_2 = col1_2.columns(2)  
-      
-    # with col1_2_1:
-    #     width = st.text_input("w")
-    #     if width.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    #     thck = st.text_input("t")
-    #     if thck.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    
-    # with col1_2_2:
-    #     height = st.text_input("h")
-    #     if height.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    #     r_out = st.text_input("r")
-    #     if r_out.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-        
-    # with col2_1:
-    #     cs2 = Image.open('cross section - 2.png')
-    #     st.image(cs2, use_column_width=True)
-    
-    # col2_2_1, col2_2_2, col2_2_3 = col2_2.columns(3)  
-      
-    # with col2_2_1:
-    #     angle_plate_width = st.text_input("b")
-    #     if angle_plate_width.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    #     angle_root_radius = st.text_input("rr")
-    #     if angle_root_radius.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    
-    # with col2_2_2:
-        # angle_plate_height = st.text_input("d")
-        # if angle_plate_height.isalpha():
-        #     st.write("Enter a valid number")
-        # else:
-        #     pass
-        # angle_toe_radius = st.text_input("rt")
-        # if angle_toe_radius.isalpha():
-        #     st.write("Enter a valid number")
-        # else:
-        #     pass
-        
-    # with col2_2_3:
-    #     angle_plate_thck = st.text_input("ta")
-    #     if angle_plate_thck.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    
-    # with col3_1:
-    #     cs3 = Image.open('cross section - 3.png')
-    #     st.image(cs3, use_column_width=True)
-    
-    # col3_2_1, col3_2_2 = col3_2.columns(2)  
-      
-    # with col3_2_1:
-    #     plate_thck = st.text_input("pt")
-    #     if plate_thck.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    #     dist_bottoms = st.text_input("db")
-    #     if dist_bottoms.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    
-    # with col3_2_2:
-    #     plate_height = st.text_input("ph")
-    #     if plate_height.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    #  from here  
-    # col1, col2, col3 = st.columns(3)
-    # col1_1, col1_2 = col1.columns([1.2,2])
-    
-    # with col1_1:
-    #     bp1 = Image.open('bottom plate - 1.png')
-    #     st.image(bp1, use_column_width=True)
-        
-    # with col1_2:
-    #     bp2 = Image.open('bottom plate - 2.png')
-    #     st.image(bp2, use_column_width=True)
-    
-    # col2_1, col2_2, col2_3 = col2.columns([1,1,2])
-    
-    # with col2_1:
-    #     ff_plate_thck = st.text_input("tp")
-    #     if ff_plate_thck.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    #     ff_plate_length = st.text_input("L")
-    #     if ff_plate_length.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    
-    # with col2_2:
-    #     ff_plate_height = st.text_input("H")
-    #     if ff_plate_height.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    #     mast_weight = st.text_input("Mast weight (kg)")
-    #     if mast_weight.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    
-    # with col2_3:  
-    #     feed_actuation = st.selectbox('Feed Actuation', ('Cylinder feed', 'Motor feed'))
-    #     torque = st.text_input('Rotary Torque (lbf-in)')
-    #     if torque.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    
-    # col3_1, col3_2 = col3.columns(2)
-    
-    # with col3_1:
-    #     pulldown = st.text_input('Pulldown load (lbf)')
-    #     if pulldown.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    #     extending = st.text_input('Extending force (lbf)')
-    #     if extending.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    
-    # with col3_2:
-    #     pullback = st.text_input('Pullback load (lbf)')
-    #     if pullback.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    #     retracting = st.text_input('Retracting force (lbf)')
-    #     if retracting.isalpha():
-    #         st.write("Enter a valid number")
-    #     else:
-    #         pass
-    
-    # button_style = """
-    #         <style>
-    #         .stButton > button {
-    #             width: 100px;
-    #             height: 50px;
-    #         }
-    #         </style>
-    #         """
-    # st.markdown(button_style, unsafe_allow_html=True)
-    
-    ## IF NESTED COLUMNS NOT ALLOWED IN HEROKU
     
     col1, col2, col3 = st.columns([1.2,1.2,1])
     with col1:
@@ -422,9 +286,10 @@ if feed_actuation == "Cylinder feed":
         else:
             pass
         
-    
+    st.write("")
+    st.write("")
 
-    col1, col2, col3, col4, col5 = st.columns([1.5,1.9,1,1,1])
+    col1, col2, col3, col4, col5 = st.columns([1.2,2.1,1,1,1])
     
     with col1:
         bp1 = Image.open('bottom plate - 1.png')
@@ -466,7 +331,8 @@ if feed_actuation == "Cylinder feed":
             st.write("Enter a valid number")
         else:
             pass
-        
+    
+    st.write("")
 
     col1, col2, col3, col4, col5, col6, col7, col8 = st.columns(8)
     
@@ -526,8 +392,27 @@ if feed_actuation == "Cylinder feed":
         else:
             pass
         
+    st.write("")
+        
     _,_,_,_,_,_,_,_,_,_,_,_,_, col, _,_,_,_,_,_,_,_,_,_,_,_,_ = st.columns(27)
-    predict = col.button('Predict')
+    
+    predict_style = """
+        <style>
+            div.stButton > button:first-child {
+                background-color: #ff6d00;
+                color: #fff;
+                height: 3rem;
+                width: 6rem;
+                font-size: 20px;
+                text-align: center;
+                margin: -1rem -1rem -1rem -1rem;
+                }
+        </style>
+    """
+    
+    with col:
+        st.markdown(predict_style, unsafe_allow_html=True)
+        predict = st.button('PREDICT')
     
     if predict:
         variables = [mast_width, mast_depth, A, B, C, D, dist_bottoms, plate_thck, plate_height, ff_plate_thck,
@@ -542,6 +427,14 @@ if feed_actuation == "Cylinder feed":
                 _,_,_, col, _,_,_ = st.columns(7)
                 with col:
                     st.write("Please check all the inputs")
+                    hide_st_style = """
+                                <style>
+                                #MainMenu {visibility: hidden;}
+                                footer {visibility: hidden;}
+                                header {visibility: hidden;}
+                                </style>
+                                """
+                    st.markdown(hide_st_style, unsafe_allow_html=True)
                 st.stop()
             
             else:
