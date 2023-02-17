@@ -832,7 +832,12 @@ if feed_actuation == "Cylinder feed":
                 loc_1_safe = loc_1_safe
                 )
             
-            pdf = pdfkit.from_string(html, False)
+            # pdf = pdfkit.from_string(html, False)
+            
+            html_file = open('report.html', 'w')
+            html_file.write(html)
+            html_file.close()
+            pdf = pdfkit.from_file('report.html', 'report.pdf')
             
             _,_,_,_,_,_,_,_,_,_,_,_,_, col, _,_,_,_,_,_,_,_,_,_,_,_,_ = st.columns(27)
             
