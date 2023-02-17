@@ -13,6 +13,9 @@ from PIL import Image
 from sectionproperties.analysis.section import Section
 import sectionproperties.pre.library.steel_sections as steel_sections
 import sectionproperties.pre.library.primitive_sections as sections
+import pdfkit
+from jinja2 import Environment, PackageLoader, select_autoescape, FileSystemLoader
+#from streamlit.components.v1 import iframe
 
 st.set_page_config(page_title="Mast design", layout="wide", page_icon = "sandvik logo.png")
 
@@ -671,6 +674,7 @@ if feed_actuation == "Cylinder feed":
             
             #Code for remaining models
             
+                       
             data = [['Mast Horizontal & MRC Retracting', str(1), retract_prediction_print_LL + ' - ' + retract_prediction_print_UL, '-', retract_safe], 
                     ['Just about to lift (1.1G Lift Factor)', str(3), just_lift_prediction_print_LL + ' - ' + just_lift_prediction_print_UL, just_lift_deflection_prediction_print_LL + ' - ' + just_lift_deflection_prediction_print_UL, just_lift_safe],
                     ['Horizontal Tramming (1.5G Vertical Load)', str(1), hor_tram_prediction_print_LL + ' - ' + hor_tram_prediction_print_UL, hor_tram_def_prediction_print_LL + ' - ' + hor_tram_def_prediction_print_UL, hor_tram_safe], 
@@ -683,7 +687,7 @@ if feed_actuation == "Cylinder feed":
                 return f'background-color: {color}'
             
             df = df.style.applymap(color_unsafe, subset = ['Compliant?'])
-            
+                        
             st.markdown("<h3 style='text-align: center'>Static compliance</h3>", unsafe_allow_html=True)
             st.write("")
             
@@ -771,7 +775,84 @@ if feed_actuation == "Cylinder feed":
             with col2:
                 st.table(df_fatigue)
                 
+            st.write("")
+                
+            env = Environment(loader = FileSystemLoader("."), autoescape = select_autoescape())
+            template = env.get_template("template.html")
+                
+            lc3a_stress = retract_prediction_print_LL + ' - ' + retract_prediction_print_UL
+            lc2_stress = just_lift_prediction_print_LL + ' - ' + just_lift_prediction_print_UL
+            lc2_deflection = just_lift_deflection_prediction_print_LL + ' - ' + just_lift_deflection_prediction_print_UL
+            lc5a_stress = hor_tram_prediction_print_LL + ' - ' + hor_tram_prediction_print_UL
+            lc5a_deflection = hor_tram_def_prediction_print_LL + ' - ' + hor_tram_def_prediction_print_UL
+            lc3b_stress = extending_prediction_print_LL + ' - ' + extending_prediction_print_UL
+            lc4a_stress = pulldown_prediction_print_LL + ' - ' + pulldown_prediction_print_UL
+            lc4b_stress = pullback_prediction_print_LL + ' - ' + pullback_prediction_print_UL
+            cd_loc1 = cd_loc_1_LL + '-' + cd_loc_1_UL
             
+            html = template.render(
+                mast_width = mast_width,
+                mast_depth = mast_depth,
+                A = A,
+                B = B,
+                C = C,
+                D = D,
+                ff_plate_thck = ff_plate_thck,
+                ff_plate_height = ff_plate_height,
+                ff_plate_length = ff_plate_length,
+                washer_1_thck = washer_1_thck,
+                washer_2_thck = washer_2_thck,
+                pulldown = pulldown,
+                pullback = pullback,
+                torque = torque,
+                width = width,
+                height = height,
+                thck = thck,
+                angle_plate_width = angle_plate_width,
+                angle_plate_height = angle_plate_height,
+                angle_plate_thck = angle_plate_thck,
+                angle_root_radius = angle_root_radius,
+                angle_toe_radius = angle_toe_radius,
+                plate_thck = plate_thck,
+                plate_height = plate_height,
+                dist_bottoms = dist_bottoms,
+                mast_weight = mast_weight,
+                extending = extending,
+                retracting = retracting,
+                yield_limit = yield_limit,
+                lc3a_stress = lc3a_stress,
+                lc2_stress = lc2_stress,
+                lc2_deflection = lc2_deflection,
+                lc5a_stress = lc5a_stress,
+                lc5a_deflection = lc5a_deflection,
+                lc3b_stress = lc3b_stress,
+                lc4a_stress = lc4a_stress,
+                lc4b_stress = lc4b_stress,
+                cd_loc1 = cd_loc1,
+                loc_1_safe = loc_1_safe
+                )
+            
+            pdf = pdfkit.from_string(html, False)
+            
+            _,_,_,_,_,_,_,_,_,_,_,_,_, col, _,_,_,_,_,_,_,_,_,_,_,_,_ = st.columns(27)
+            
+            report_style = """
+                <style>
+                    div.stDownloadButton > button:first-child {
+                        background-color: #ff6d00;
+                        color: #fff;
+                        height: 3rem;
+                        width: 6rem;
+                        font-size: 20px;
+                        text-align: center;
+                        margin: -1rem -1rem -1rem -1rem;
+                        }
+                </style>
+            """
+            
+            with col:
+                st.markdown(report_style, unsafe_allow_html=True)
+                report = st.download_button('REPORT', data = pdf, file_name="report.pdf", mime = "application/octet-stream")
 
 elif feed_actuation == 'Motor feed':
     
