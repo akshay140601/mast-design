@@ -13,9 +13,7 @@ from PIL import Image
 from sectionproperties.analysis.section import Section
 import sectionproperties.pre.library.steel_sections as steel_sections
 import sectionproperties.pre.library.primitive_sections as sections
-import pdfkit
-from jinja2 import Environment, PackageLoader, select_autoescape, FileSystemLoader
-#from streamlit.components.v1 import iframe
+from jinja2 import Environment, select_autoescape, FileSystemLoader
 
 st.set_page_config(page_title="Mast design", layout="wide", page_icon = "sandvik logo.png")
 
@@ -81,7 +79,7 @@ with st.sidebar:
     st.write("3. Stress and Young's Modulus values should be entered in psi")
     st.write("4. All inputs are mandatory. Do not use commas. Deflection is always in Loc. 5")
     st.write("5. If you encounter a 'TopologicalError' the entered geometry cannot be constructed. Please enter a valid geometry in that case")
-    st.write("6. Click below button to download data of previous masts for reference")
+    st.write("6. Click below button to download data of existing masts for reference")
     _,col,_ = st.columns(3)
     with col:
         with open("Previous Mast Data.xlsx", "rb") as file:
@@ -821,13 +819,19 @@ if feed_actuation == "Cylinder feed":
                 retracting = retracting,
                 yield_limit = yield_limit,
                 lc3a_stress = lc3a_stress,
+                retract_safe = retract_safe,
                 lc2_stress = lc2_stress,
                 lc2_deflection = lc2_deflection,
+                just_lift_safe = just_lift_safe,
                 lc5a_stress = lc5a_stress,
                 lc5a_deflection = lc5a_deflection,
+                hor_tram_safe = hor_tram_safe,
                 lc3b_stress = lc3b_stress,
+                extending_safe = extending_safe,
                 lc4a_stress = lc4a_stress,
+                pulldown_safe = pulldown_safe,
                 lc4b_stress = lc4b_stress,
+                pullback_safe = pullback_safe,
                 cd_loc1 = cd_loc1,
                 loc_1_safe = loc_1_safe
                 )
@@ -837,27 +841,37 @@ if feed_actuation == "Cylinder feed":
             html_file = open('report.html', 'w')
             html_file.write(html)
             html_file.close()
-            pdf = pdfkit.from_file('report.html', 'report.pdf')
+            # source_html = open('report.html', 'r')
+            # content = source_html.read()
+            # source_html.close()
             
-            _,_,_,_,_,_,_,_,_,_,_,_,_, col, _,_,_,_,_,_,_,_,_,_,_,_,_ = st.columns(27)
+            # pdf = pdfkit.from_file('report.html', 'report.pdf')
             
-            report_style = """
-                <style>
-                    div.stDownloadButton > button:first-child {
-                        background-color: #ff6d00;
-                        color: #fff;
-                        height: 3rem;
-                        width: 6rem;
-                        font-size: 20px;
-                        text-align: center;
-                        margin: -1rem -1rem -1rem -1rem;
-                        }
-                </style>
-            """
+            # result_file = open('report.pdf', "w+b")
+            # pdf = pisa.CreatePDF(content, dest = result_file)
+            # result_file.close()
             
-            with col:
-                st.markdown(report_style, unsafe_allow_html=True)
-                report = st.download_button('REPORT', data = pdf, file_name="report.pdf", mime = "application/octet-stream")
+            
+            with open('report.html', 'r') as f:
+                _,_,_,_,_,_,_,_,_,_,_,_,_, col, _,_,_,_,_,_,_,_,_,_,_,_,_ = st.columns(27)
+                
+                report_style = """
+                    <style>
+                        div.stDownloadButton > button:first-child {
+                            background-color: #ff6d00;
+                            color: #fff;
+                            height: 3rem;
+                            width: 6rem;
+                            font-size: 20px;
+                            text-align: center;
+                            margin: -1rem -1rem -1rem -1rem;
+                            }
+                    </style>
+                """
+                
+                with col:
+                    st.markdown(report_style, unsafe_allow_html=True)
+                    report = st.download_button('REPORT', data = f, file_name="report.html", mime="text/csv/png")
 
 elif feed_actuation == 'Motor feed':
     
@@ -1457,6 +1471,96 @@ elif feed_actuation == 'Motor feed':
                 
             with col2:
                 st.table(df_fatigue)
+                
+            env = Environment(loader = FileSystemLoader("."), autoescape = select_autoescape())
+            template = env.get_template("template_1.html")
+                
+            lc3a_stress = retract_prediction_print_LL + ' - ' + retract_prediction_print_UL
+            lc2_stress = just_lift_prediction_print_LL + ' - ' + just_lift_prediction_print_UL
+            lc2_deflection = just_lift_deflection_prediction_print_LL + ' - ' + just_lift_deflection_prediction_print_UL
+            lc5a_stress = hor_tram_prediction_print_LL + ' - ' + hor_tram_prediction_print_UL
+            lc5a_deflection = hor_tram_def_prediction_print_LL + ' - ' + hor_tram_def_prediction_print_UL
+            lc3b_stress = extending_prediction_print_LL + ' - ' + extending_prediction_print_UL
+            lc4b_stress = pullback_prediction_print_LL + ' - ' + pullback_prediction_print_UL
+            cd_loc1 = cd_loc_1_LL + '-' + cd_loc_1_UL
+            
+            html = template.render(
+                mast_width = mast_width,
+                mast_depth = mast_depth,
+                A = A,
+                B = B,
+                C = C,
+                D = D,
+                pulldown = pulldown,
+                pullback = pullback,
+                torque = torque,
+                width = width,
+                height = height,
+                thck = thck,
+                angle_plate_width = angle_plate_width,
+                angle_plate_height = angle_plate_height,
+                angle_plate_thck = angle_plate_thck,
+                angle_root_radius = angle_root_radius,
+                angle_toe_radius = angle_toe_radius,
+                plate_thck = plate_thck,
+                plate_height = plate_height,
+                dist_bottoms = dist_bottoms,
+                mast_weight = mast_weight,
+                extending = extending,
+                retracting = retracting,
+                yield_limit = yield_limit,
+                lc3a_stress = lc3a_stress,
+                retract_safe = retract_safe,
+                lc2_stress = lc2_stress,
+                lc2_deflection = lc2_deflection,
+                just_lift_safe = just_lift_safe,
+                lc5a_stress = lc5a_stress,
+                lc5a_deflection = lc5a_deflection,
+                hor_tram_safe = hor_tram_safe,
+                lc3b_stress = lc3b_stress,
+                extending_safe = extending_safe,
+                lc4b_stress = lc4b_stress,
+                pullback_safe = pullback_safe,
+                cd_loc1 = cd_loc1,
+                loc_1_safe = loc_1_safe
+                )
+            
+            # pdf = pdfkit.from_string(html, False)
+            
+            html_file = open('report.html', 'w')
+            html_file.write(html)
+            html_file.close()
+            # source_html = open('report.html', 'r')
+            # content = source_html.read()
+            # source_html.close()
+            
+            # pdf = pdfkit.from_file('report.html', 'report.pdf')
+            
+            # result_file = open('report.pdf', "w+b")
+            # pdf = pisa.CreatePDF(content, dest = result_file)
+            # result_file.close()
+            
+            
+            with open('report.html', 'r') as f:
+                _,_,_,_,_,_,_,_,_,_,_,_,_, col, _,_,_,_,_,_,_,_,_,_,_,_,_ = st.columns(27)
+                
+                report_style = """
+                    <style>
+                        div.stDownloadButton > button:first-child {
+                            background-color: #ff6d00;
+                            color: #fff;
+                            height: 3rem;
+                            width: 6rem;
+                            font-size: 20px;
+                            text-align: center;
+                            margin: -1rem -1rem -1rem -1rem;
+                            }
+                    </style>
+                """
+                
+                with col:
+                    st.markdown(report_style, unsafe_allow_html=True)
+                    report = st.download_button('REPORT', data = f, file_name="report.html", mime="text/csv/png")
  
 hide_st_style = """
             <style>
