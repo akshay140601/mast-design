@@ -6,7 +6,10 @@ Created on Thu Feb 16 14:03:17 2023
 """
 -->
 
-
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 * {
   box-sizing: border-box;
@@ -46,6 +49,7 @@ Created on Thu Feb 16 14:03:17 2023
 .table, th, td {
      border: 1.5px solid #000;
      border-collapse: collapse;
+     text-align: center;
 }
 
 .main {
@@ -55,16 +59,17 @@ Created on Thu Feb 16 14:03:17 2023
   overflow: hidden;
 }
 </style>
-
+</head>
+<body>
 
 <h1 style="text-align: center">Report</h1>
 
 <div class="row">
   <div class="column left">
-    <img src="Mast height.png" style = "width: 100%;">
+    <img src="https://i.ibb.co/Jcjvr3y/Mast-height.png" style = "width: 100%;">
   </div>
   <div class="column right">
-    <img src="bottom plate - combined.png" style = "width: 100%;">
+    <img src="https://i.ibb.co/N3nYpbY/bottom-plate-combined.png" style = "width: 100%;">
   </div>
 </div>
 
@@ -85,6 +90,7 @@ Created on Thu Feb 16 14:03:17 2023
         <td class="td">Pullback</td>
         <td class="td">Rotary Torque</td>
     </tr>
+    <tr>
         <td class="td">{{ mast_width }}</td>
         <td class="td">{{ mast_depth }}</td>
         <td class="td">{{ A }}</td>
@@ -99,41 +105,41 @@ Created on Thu Feb 16 14:03:17 2023
         <td class="td">{{ pulldown }}</td>
         <td class="td">{{ pullback }}</td>
         <td class="td">{{ torque }}</td>
-        <tr>
     </tr>
 
 </table>
 
 <div class="row">
     <div class="column left1">
-      <img src="cross section - 1.png" style = "width: 100%;">
+      <img src="https://i.ibb.co/tKTd5G1/cross-section-1.png" style = "width: 100%;">
     </div>
     <div class="column middle1">
-        <img src="cross section - 2.png" style = "width: 100%;">
+        <img src="https://i.ibb.co/yYWZ5Hw/cross-section-2.png" style = "width: 100%;">
     </div>
     <div class="column right1">
-      <img src="cross section - 3.png" style = "width: 100%;">
+      <img src="https://i.ibb.co/DkfN5yY/cross-section-3.png" style = "width: 100%;">
     </div>
 </div>
 
 <table align="center" class="table">
     <tr>
-        <td class="td">w</td>
-        <td class="td">h</td>
-        <td class="td">t</td>
-        <td class="td">b</td>
-        <td class="td">d</td>
-        <td class="td">ta</td>
-        <td class="td">rr</td>
-        <td class="td">rt</td>
-        <td class="td">pt</td>
-        <td class="td">ph</td>
-        <td class="td">db</td>
-        <td class="td">Mast Weight (kg)</td>
-        <td class="td">MRC Extending force</td>
-        <td class="td">MRC Retracting force</td>
-        <td class="td">Material Yield Stress</td>
+        <th class="th">w</th>
+        <th class="th">h</th>
+        <th class="th">t</th>
+        <th class="th">b</th>
+        <th class="th">d</th>
+        <th class="th">ta</th>
+        <th class="th">rr</th>
+        <th class="th">rt</th>
+        <th class="th">pt</th>
+        <th class="th">ph</th>
+        <th class="th">db</th>
+        <th class="th">Mast Weight (kg)</th>
+        <th class="th">MRC Extending force</th>
+        <th class="th">MRC Retracting force</th>
+        <th class="th">Material Yield Stress</th>
     </tr>
+    <tr>
         <td class="td">{{ width }}</td>
         <td class="td">{{ height }}</td>
         <td class="td">{{ thck }}</td>
@@ -149,14 +155,13 @@ Created on Thu Feb 16 14:03:17 2023
         <td class="td">{{ extending }}</td>
         <td class="td">{{ retracting }}</td>
         <td class="td">{{ yield_limit }}</td>
-        <tr>
     </tr>
 
 </table>
 
 <h1 style="text-align: center">Static Compliance</h1>
 <div class="main">
-    <img src="Mast static failure locations.png" align="left" style="width: 50%;">
+    <img src="https://i.ibb.co/db50Cnx/Mast-static-failure-locations.png" align="left" style="width: 50%;">
     <table align="right" class="table" style="width: 50%">
         <tr>
             <th class="th">Load case</th>
@@ -212,7 +217,7 @@ Created on Thu Feb 16 14:03:17 2023
 
 <h1 style="text-align: center;">Fatigue Compliance</h1>
 <div class="main">
-    <img src="Mast fatigue failure locations.png" align="left" style="width: 50%;">
+    <img src="https://i.ibb.co/NF0bgLN/Mast-fatigue-failure-locations.png" align="left" style="width: 50%;">
     <table align="right" class="table" style="width: 50%;">
         <tr>
             <th class="th">Cycle</th>
@@ -230,3 +235,5 @@ Created on Thu Feb 16 14:03:17 2023
 
 </div>
 
+</body>
+</html>
