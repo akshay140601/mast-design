@@ -1,0 +1,219 @@
+<!--# -*- coding: utf-8 -*-
+"""
+Created on Thu Feb 16 14:03:17 2023
+
+@author: fl9768
+"""
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+.column {
+  float: left;
+  padding: 10px;
+  height: 20%;
+}
+
+.left {
+  width: 70%;
+}
+
+.right {
+  width: 30%;
+}
+
+.left1 {
+  width: 38%;
+}
+
+.middle1{
+    width: 33%
+}
+
+.right1 {
+  width: 29%;
+}
+
+.row:after {
+  content: "";
+  clear: both;
+}
+
+.table, th, td {
+     border: 1.5px solid #000;
+     border-collapse: collapse;
+     text-align: center;
+}
+
+.main {
+  float: left;
+  width: 100%;
+  padding: 8px;
+  overflow: hidden;
+}
+</style>
+</head>
+<body>
+
+<h1 style="text-align: center">Report</h1>
+
+<div>
+    <img src="https://i.ibb.co/Jcjvr3y/Mast-height.png" style = "width: 100%;">
+</div>
+
+<table align="center" class="table">
+    <tr>
+        <td class="td">Mast width</td>
+        <td class="td">Mast depth</td>
+        <td class="td">A</td>
+        <td class="td">B</td>
+        <td class="td">C</td>
+        <td class="td">D</td>
+        <td class="td">Pulldown</td>
+        <td class="td">Pullback</td>
+        <td class="td">Rotary Torque</td>
+    </tr>
+    <tr>
+        <td class="td">{{ mast_width }}</td>
+        <td class="td">{{ mast_depth }}</td>
+        <td class="td">{{ A }}</td>
+        <td class="td">{{ B }}</td>
+        <td class="td">{{ C }}</td>
+        <td class="td">{{ D }}</td>
+        <td class="td">{{ pulldown }}</td>
+        <td class="td">{{ pullback }}</td>
+        <td class="td">{{ torque }}</td>
+    </tr>
+
+</table>
+
+<div class="row">
+    <div class="column left1">
+      <img src="https://i.ibb.co/tKTd5G1/cross-section-1.png" style = "width: 100%;">
+    </div>
+    <div class="column middle1">
+        <img src="https://i.ibb.co/yYWZ5Hw/cross-section-2.png" style = "width: 100%;">
+    </div>
+    <div class="column right1">
+      <img src="https://i.ibb.co/DkfN5yY/cross-section-3.png" style = "width: 100%;">
+    </div>
+</div>
+
+<table align="center" class="table">
+    <tr>
+        <th class="th">w</th>
+        <th class="th">h</th>
+        <th class="th">t</th>
+        <th class="th">b</th>
+        <th class="th">d</th>
+        <th class="th">ta</th>
+        <th class="th">rr</th>
+        <th class="th">rt</th>
+        <th class="th">pt</th>
+        <th class="th">ph</th>
+        <th class="th">db</th>
+        <th class="th">Mast Weight (kg)</th>
+        <th class="th">MRC Extending force</th>
+        <th class="th">MRC Retracting force</th>
+        <th class="th">Material Yield Stress</th>
+    </tr>
+    <tr>
+        <td class="td">{{ width }}</td>
+        <td class="td">{{ height }}</td>
+        <td class="td">{{ thck }}</td>
+        <td class="td">{{ angle_plate_width }}</td>
+        <td class="td">{{ angle_plate_height }}</td>
+        <td class="td">{{ angle_plate_thck }}</td>
+        <td class="td">{{ angle_root_radius }}</td>
+        <td class="td">{{ angle_toe_radius }}</td>
+        <td class="td">{{ plate_thck }}</td>
+        <td class="td">{{ plate_height }}</td>
+        <td class="td">{{ dist_bottoms }}</td>
+        <td class="td">{{ mast_weight }}</td>
+        <td class="td">{{ extending }}</td>
+        <td class="td">{{ retracting }}</td>
+        <td class="td">{{ yield_limit }}</td>
+    </tr>
+
+</table>
+
+<h1 style="text-align: center">Static Compliance</h1>
+<div class="main">
+    <img src="https://i.ibb.co/db50Cnx/Mast-static-failure-locations.png" align="left" style="width: 50%;">
+    <table align="right" class="table" style="width: 50%">
+        <tr>
+            <th class="th">Load case</th>
+            <th class="th">Loc. No.</th>
+            <th class="th">Stress (psi)</th>
+            <th class="th">Deflection (in)</th>
+            <th class="th">Compliant?</th>
+        </tr>
+        <tr>
+            <td class="td">Mast horizontal & MRC retracting</td>
+            <td class="td">1</td>
+            <td class="td">{{ lc3a_stress }}</td>
+            <td class="td">-</td>
+            <td class="td">{{ retract_safe }}</td>
+        </tr>
+        <tr>
+            <td class="td">Just about to lift (1.1G Lift Factor)</td>
+            <td class="td">3</td>
+            <td class="td">{{ lc2_stress }}</td>
+            <td class="td">{{ lc2_deflection }}</td>
+            <td class="td">{{ just_lift_safe }}</td>
+        </tr>
+        <tr>
+            <td class="td">Horizontal Tramming (1.5G Vertical Load)</td>
+            <td class="td">1</td>
+            <td class="td">{{ lc5a_stress }}</td>
+            <td class="td">{{ lc5a_deflection }}</td>
+            <td class="td">{{ hor_tram_safe }}</td>
+        </tr>
+        <tr>
+            <td class="td">Mast vertical & MRC Extending</td>
+            <td class="td">2</td>
+            <td class="td">{{ lc3b_stress }}</td>
+            <td class="td">-</td>
+            <td class="td">{{ extending_safe }}</td>
+        </tr>
+        <tr>
+            <td class="td">Vertical Drilling (120% Pullback and 135% Torque)</td>
+            <td class="td">6</td>
+            <td class="td">{{ lc4b_stress }}</td>
+            <td class="td">-</td>
+            <td class="td">{{ pullback_safe }}</td>
+        </tr>
+    </table>
+</div>
+
+<h1 style="text-align: center;">Fatigue Compliance</h1>
+<div class="main">
+    <img src="https://i.ibb.co/NF0bgLN/Mast-fatigue-failure-locations.png" align="left" style="width: 50%;">
+    <table align="right" class="table" style="width: 50%;">
+        <tr>
+            <th class="th">Cycle</th>
+            <th class="th">Loc. No.</th>
+            <th class="th">Cumulative Damage</th>
+            <th class="th">Compliant?</th>
+        </tr>
+        <tr>
+            <td class="td">Mast Raising-Lowering Cycle</td>
+            <td class="td">1 (Material stress)</td>
+            <td class="td">{{ cd_loc1 }}</td>
+            <td class="td">{{ loc_1_safe }}</td>
+        </tr>
+    </table>
+
+</div>
+
+</body>
+</html>
+
+
