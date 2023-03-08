@@ -4,7 +4,7 @@ Created on Mon Jan  9 12:18:07 2023
 
 @author: fl9768
 """
-
+url = "https://pdfhost.io/v/eTNIl1tye_Standards_for_mast_design"
 import pandas as pd
 import streamlit as st
 import pickle
@@ -28,10 +28,10 @@ pattern_style = """
     <style> 
         div.header {
         background: #0099ff;
-        -webkit-clip-path: polygon(16% 0%, 83% 0%, 88% 100%, 100% 100%, 10% 100%);  
-        clip-path: polygon(16% 0%, 83% 0%, 88% 100%, 100% 100%, 10% 100%);  
-        font-size: 1.770833vw;  
-        color: #fff;  
+        -webkit-clip-path: polygon(16% 0%, 83% 0%, 88% 100%, 100% 100%, 10% 100%); 
+        clip-path: polygon(16% 0%, 83% 0%, 88% 100%, 100% 100%, 10% 100%);
+        font-size: 1.770833vw;
+        color: #fff; 
         text-align: center;
         margin: -1rem -1rem -1rem -1rem;
         }
@@ -64,27 +64,26 @@ download_style = """
             background-color: #ff6d00;
             color: #fff;
             height: 3rem;
-            width: 8rem;
+            width: 11.5rem;
             font-size: 20px;
             text-align: center;
-            margin: -1rem;
+            margin: -1rem -1rem 0rem 4rem;
             }
     </style>
 """
 
 with st.sidebar:
     st.markdown("<h3 style='text-align: center'>IMPORTANT</h3>", unsafe_allow_html=True)
-    st.write("1. Length values should be entered in inches")
-    st.write("2. Force values should be entered in lbf")
-    st.write("3. Stress and Young's Modulus values should be entered in psi")
-    st.write("4. All inputs are mandatory. Do not use commas. Deflection is always in Loc. 5")
-    st.write("5. If you encounter a 'TopologicalError' the entered geometry cannot be constructed. Please enter a valid geometry in that case")
-    st.write("6. Click below button to download data of existing masts for reference")
-    _,col,_ = st.columns(3)
-    with col:
-        with open("Previous Mast Data.xlsx", "rb") as file:
-            st.markdown(download_style, unsafe_allow_html=True)
-            btn = st.download_button("DOWNLOAD", file, file_name = "Existing Mast Data.xlsx")
+    st.write("1. All inputs are mandatory. Do not use commas. Deflection is always in Loc. 5")
+    st.write("2. If you encounter a 'TopologicalError' the entered geometry cannot be constructed. Please enter a valid geometry in that case")
+    st.write("3. Click below button to download data of existing masts for reference")
+    with open("Previous Mast Data.xlsx", "rb") as file:
+        st.markdown(download_style, unsafe_allow_html=True)
+        btn = st.download_button("DOWNLOAD EXCEL", file, file_name = "Existing Mast Data.xlsx")
+    st.write("4. Click below button to download AISC plate and tube standards for reference")
+    with open("Standards for mast design.pdf", "rb") as file_1:
+        st.markdown(download_style, unsafe_allow_html=True)
+        btn_1 = st.download_button("DOWNLOAD PDF", file_1, file_name = "AISC Tube and plate standards.pdf")
 
 if feed_actuation == "Cylinder feed":
     
@@ -97,10 +96,10 @@ if feed_actuation == "Cylinder feed":
     input_label_size = """
         <style>
             div[class*="stTextInput"] label {
-                font-size: 20px;
+                font-size: 18px;
                 }
             div[class*="stSelectbox"] label {
-                font-size: 20px;
+                font-size: 18px;
                 }
         </style>
     """
@@ -175,6 +174,59 @@ if feed_actuation == "Cylinder feed":
             pass
         
     st.write("")
+
+    col1, col2, col3, col4, col5, col6, col7 = st.columns([1.3,1,1,1,1,1,1])
+    
+    with col1:
+        mast_weight = st.text_input("Mast Assembly Weight (lbs)")
+        if mast_weight.isalpha():
+            st.write("Enter a valid number")
+        else:
+            pass
+        
+    with col2:
+        pulldown = st.text_input("Pulldown (lbf)")
+        if pulldown.isalpha():
+            st.write("Enter a valid number")
+        else:
+            pass
+        
+    with col3:
+        pullback = st.text_input("Pullback (lbf)")
+        if pullback.isalpha():
+            st.write("Enter a valid number")
+        else:
+            pass
+        
+    with col4:
+        torque = st.text_input("Rotary torque (lbf-in)")
+        if torque.isalpha():
+            st.write("Enter a valid number")
+        else:
+            pass
+        
+    with col5:
+        extending = st.text_input("MRC Extending force (lbf)")
+        if extending.isalpha():
+            st.write("Enter a valid number")
+        else:
+            pass
+        
+    with col6:
+        retracting = st.text_input("MRC Retracting force (lbf)")
+        if retracting.isalpha():
+            st.write("Enter a valid number")
+        else:
+            pass
+        
+    with col7:
+        yield_limit = st.text_input("Material Yield stress (psi)")
+        if yield_limit.isalpha():
+            st.write("Enter a valid number")
+        else:
+            pass
+
+    st.markdown("<h4 style='text-align: center'>For section modulus calculation</h4>", unsafe_allow_html=True)
         
 
 # _,_,_,_,_,_,_,_,_,_,_,_,_, col, _,_,_,_,_,_,_,_,_,_,_,_,_ = st.columns(27)
@@ -215,13 +267,13 @@ if feed_actuation == "Cylinder feed":
     df = pd.read_excel("Long member cross sections.xlsx")
     df_2 = pd.read_excel("Angle plate cross sections.xlsx")
     with col1:
-        width = st.selectbox('w', df.Width.unique())
+        width = st.selectbox('w (in)', df.Width.unique())
         # width = st.text_input("w")
         # if width.isalpha():
         #     st.write("Enter a valid number")
         # else:
         #     pass
-        height = st.selectbox('h', df.loc[df.Width==width]['Height'].unique())
+        height = st.selectbox('h (in)', df.loc[df.Width==width]['Height'].unique())
         # thck = st.text_input("t")
         # if thck.isalpha():
         #     st.write("Enter a valid number")
@@ -229,7 +281,7 @@ if feed_actuation == "Cylinder feed":
         #     pass
         
     with col2:
-        thck = st.selectbox('t', df.loc[(df.Width==width) & (df.Height==height)]['Thickness'].unique())
+        thck = st.selectbox('t (in)', df.loc[(df.Width==width) & (df.Height==height)]['Thickness'].unique())
         # height = st.text_input("h")
         # if height.isalpha():
         #     st.write("Enter a valid number")
@@ -237,12 +289,12 @@ if feed_actuation == "Cylinder feed":
         #     pass
         
     with col3:
-        angle_plate_width = st.selectbox('b', df_2.Breadth.unique())
+        angle_plate_width = st.selectbox('b (in)', df_2.Breadth.unique())
         # if angle_plate_width.isalpha():
         #     st.write("Enter a valid number")
         # else:
         #     pass
-        angle_plate_height = st.selectbox('d', df_2.loc[df_2.Breadth==angle_plate_width]['Depth'].unique())
+        angle_plate_height = st.selectbox('d (in)', df_2.loc[df_2.Breadth==angle_plate_width]['Depth'].unique())
         # angle_root_radius = st.text_input("rr")
         # if angle_root_radius.isalpha():
         #     st.write("Enter a valid number")
@@ -250,15 +302,15 @@ if feed_actuation == "Cylinder feed":
         #     pass
         
     with col4:
-        angle_plate_thck = st.selectbox('ta', df_2.loc[(df_2.Breadth==angle_plate_width) & (df_2.Depth==angle_plate_height)]['thickness'].unique())
-        angle_toe_radius = st.text_input("rt")
+        angle_plate_thck = st.selectbox('ta (in)', df_2.loc[(df_2.Breadth==angle_plate_width) & (df_2.Depth==angle_plate_height)]['thickness'].unique())
+        angle_toe_radius = st.text_input("rt (in)")
         if angle_toe_radius.isalpha():
             st.write("Enter a valid number")
         else:
             pass
     
     with col5: 
-        angle_root_radius = st.text_input("rr")
+        angle_root_radius = st.text_input("rr (in)")
         if angle_root_radius.isalpha():
             st.write("Enter a valid number")
         else:
@@ -266,19 +318,19 @@ if feed_actuation == "Cylinder feed":
         
         
     with col6:
-        plate_thck = st.text_input("pt")
+        plate_thck = st.text_input("pt (in)")
         if plate_thck.isalpha():
             st.write("Enter a valid number")
         else:
             pass
-        dist_bottoms = st.text_input("db")
+        dist_bottoms = st.text_input("db (in)")
         if dist_bottoms.isalpha():
             st.write("Enter a valid number")
         else:
             pass
         
     with col7:
-        plate_height = st.text_input("ph")
+        plate_height = st.text_input("ph (in)")
         if plate_height.isalpha():
             st.write("Enter a valid number")
         else:
@@ -299,89 +351,38 @@ if feed_actuation == "Cylinder feed":
         st.markdown("<h5 style='text-align: center'>Front view</h5>", unsafe_allow_html=True)
                 
     with col3:
-        ff_plate_thck = st.text_input("tp")
+        ff_plate_thck = st.text_input("tp (in)")
         if ff_plate_thck.isalpha():
             st.write("Enter a valid number")
         else:
             pass
-        ff_plate_length = st.text_input("L")
+        ff_plate_length = st.text_input("L (in)")
         if ff_plate_length.isalpha():
             st.write("Enter a valid number")
         else:
             pass    
             
     with col4:
-        ff_plate_height = st.text_input("H")
+        ff_plate_height = st.text_input("H (in)")
         if ff_plate_height.isalpha():
             st.write("Enter a valid number")
         else:
             pass  
         
-        washer_1_thck = st.text_input("Washer1 thickness")
+        washer_1_thck = st.text_input("Washer1 thickness (in)")
         if washer_1_thck.isalpha():
             st.write("Enter a valid number")
         else:
             pass
         
     with col5:
-        washer_2_thck = st.text_input("Washer2 thickness")
+        washer_2_thck = st.text_input("Washer2 thickness (in)")
         if washer_2_thck.isalpha():
             st.write("Enter a valid number")
         else:
             pass
     
     st.write("")
-
-    col1, col2, col3, col4, col5, col6, col7 = st.columns([1.3,1,1,1,1,1,1])
-    
-    with col1:
-        mast_weight = st.text_input("Mast Assembly Weight (kg)")
-        if mast_weight.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        
-    with col2:
-        pulldown = st.text_input("Pulldown")
-        if pulldown.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        
-    with col3:
-        pullback = st.text_input("Pullback")
-        if pullback.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        
-    with col4:
-        torque = st.text_input("Rotary torque")
-        if torque.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        
-    with col5:
-        extending = st.text_input("MRC Extending force")
-        if extending.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        
-    with col6:
-        retracting = st.text_input("MRC Retracting force")
-        if retracting.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        
-    with col7:
-        yield_limit = st.text_input("Material Yield stress")
-        if yield_limit.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
         
     st.write("")
         
@@ -457,6 +458,7 @@ if feed_actuation == "Cylinder feed":
             angle_toe_radius = float(angle_toe_radius)
             angle_root_radius = float(angle_root_radius)
             mast_weight = float(mast_weight)
+            mast_weight = mast_weight * 0.453592
             pulldown = float(pulldown)
             pullback = float(pullback)
             torque = float(torque)
@@ -679,7 +681,7 @@ if feed_actuation == "Cylinder feed":
                     ['Mast vertical & MRC Extending', str(2), extending_prediction_print_LL + ' - ' + extending_prediction_print_UL, '-', extending_safe],
                     ['Vertical Drilling (120% Pulldown and 135% Torque)', str(4), pulldown_prediction_print_LL + ' - ' + pulldown_prediction_print_UL, '-', pulldown_safe],
                     ['Vertical Drilling (120% Pullback and 135% Torque)', str(6), pullback_prediction_print_LL + ' - ' + pullback_prediction_print_UL, '-', pullback_safe]]
-            df = pd.DataFrame(data, columns = ['Load case', 'Loc. No.', 'Stress', 'Deflection', 'Compliant?'])
+            df = pd.DataFrame(data, columns = ['Load case', 'Loc. No.', 'Stress (psi)', 'Deflection (in)', 'Compliant?'])
             def color_unsafe(val):
                 color = 'red' if val == 'No' else 'green'
                 return f'background-color: {color}'
@@ -689,13 +691,44 @@ if feed_actuation == "Cylinder feed":
             st.markdown("<h3 style='text-align: center'>Static compliance</h3>", unsafe_allow_html=True)
             st.write("")
             
-            col1, col2 = st.columns(2)
+            col1, col2 = st.columns([1,1.05])
             with col1:
                 sf = Image.open('Mast static failure locations.png')
                 st.image(sf, use_column_width=True)
                 
             with col2:
                 st.table(df)
+                Dict = {'retract_safe': "Increase C/S-1 or decrease length 'D' (Mast horizontal & MRC retracting)",
+                        'just_lift_safe': "Increase C/S-2 or decrease lengths 'C' and 'D' or increase mast depth (Just about to lift)",
+                        'hor_tram_safe': "Increase C/S-1 or decrease length 'D' or decrease weight (Horizontal Tramming)",
+                        'extending_safe': "Increase C/S-3 and C/S-2 or increase mast depth (Mast vertical & MRC extending)",
+                        'pulldown_safe': "Increase pt and H or decrease L (Vertical drilling - Pulldown)",
+                        'pullback_safe': "Increase C/S-1 or increase mast depth (Vertical drilling - Pullback)"}
+                compliant_set = [retract_safe, just_lift_safe, hor_tram_safe, extending_safe, pulldown_safe, pullback_safe]
+                recom_set = []
+                for i in range(len(compliant_set)):
+                    if (compliant_set[i] == "No"):
+                        if i == 0:
+                            recom_set.append("retract_safe")
+                        elif i == 1:
+                            recom_set.append("just_lift_safe")
+                        elif i == 2:
+                            recom_set.append("hor_tram_safe")
+                        elif i == 3:
+                            recom_set.append("extending_safe")
+                        elif i == 4:
+                            recom_set.append("pulldown_safe")
+                        elif i == 5:
+                            recom_set.append("pullback_safe")
+                if len(recom_set) != 0:
+                    st.markdown("<h5 style='text-align: center'>Recommendations</h5>", unsafe_allow_html=True)
+                    for i in range(len(recom_set)):
+                        st.write(str(i+1) + "." + " " + Dict.get(recom_set[i]))     
+
+                else:
+                    st.write("<h6 style='text-align: center'>Mast design is static compliant</h6>", unsafe_allow_html=True)              
+                    
+
                 
             #Code for fatigue models and cumulative damage calculation
             
@@ -772,6 +805,11 @@ if feed_actuation == "Cylinder feed":
                 
             with col2:
                 st.table(df_fatigue)
+                if loc_1_safe == "No":
+                    st.markdown("<h5 style='text-align: center'>Recommendations</h5>", unsafe_allow_html=True)
+                    st.write("1. Increase C/S-3 and mast depth or decrease lengths 'C' and 'D'")
+                else:
+                    st.write("<h6 style='text-align: center'>Mast design is fatigue compliant</h6>", unsafe_allow_html=True)    
                 
             st.write("")
                 
@@ -883,10 +921,10 @@ elif feed_actuation == 'Motor feed':
     input_label_size = """
         <style>
             div[class*="stTextInput"] label {
-                font-size: 20px;
+                font-size: 18px;
                 }
             div[class*="stSelectbox"] label {
-                font-size: 20px;
+                font-size: 18px;
                 }
         </style>
     """
@@ -961,6 +999,60 @@ elif feed_actuation == 'Motor feed':
             pass
 
     st.write("")
+
+    col1, col2, col3, col4, col5, col6, col7 = st.columns([1.3,1,1,1,1,1,1])
+    
+    with col1:
+        mast_weight = st.text_input("Mast Assembly weight (lbs)")
+        if mast_weight.isalpha():
+            st.write("Enter a valid number")
+        else:
+            pass
+        
+    with col2:
+        pulldown = st.text_input("Pulldown (lbf)")
+        if pulldown.isalpha():
+            st.write("Enter a valid number")
+        else:
+            pass
+        
+    with col3:
+        pullback = st.text_input("Pullback (lbf)")
+        if pullback.isalpha():
+            st.write("Enter a valid number")
+        else:
+            pass
+        
+    with col4:
+        torque = st.text_input("Rotary torque (lbf-in)")
+        if torque.isalpha():
+            st.write("Enter a valid number")
+        else:
+            pass
+        
+    with col5:
+        extending = st.text_input("MRC Extending force (lbf)")
+        if extending.isalpha():
+            st.write("Enter a valid number")
+        else:
+            pass
+        
+    with col6:
+        retracting = st.text_input("MRC Retracting force (lbf)")
+        if retracting.isalpha():
+            st.write("Enter a valid number")
+        else:
+            pass
+        
+    with col7:
+        yield_limit = st.text_input("Material Yield stress (psi)")
+        if yield_limit.isalpha():
+            st.write("Enter a valid number")
+        else:
+            pass
+    
+    st.markdown("<h4 style='text-align: center'>For section modulus calculation</h4>", unsafe_allow_html=True)
+
     col1, col2, col3 = st.columns(3)
     
     with col1:
@@ -990,13 +1082,13 @@ elif feed_actuation == 'Motor feed':
     df = pd.read_excel("Long member cross sections.xlsx")
     df_2 = pd.read_excel("Angle plate cross sections.xlsx")
     with col1:
-        width = st.selectbox('w', df.Width.unique())
+        width = st.selectbox('w (in)', df.Width.unique())
         # width = st.text_input("w")
         # if width.isalpha():
         #     st.write("Enter a valid number")
         # else:
         #     pass
-        height = st.selectbox('h', df.loc[df.Width==width]['Height'].unique())
+        height = st.selectbox('h (in)', df.loc[df.Width==width]['Height'].unique())
         # thck = st.text_input("t")
         # if thck.isalpha():
         #     st.write("Enter a valid number")
@@ -1004,7 +1096,7 @@ elif feed_actuation == 'Motor feed':
         #     pass
         
     with col2:
-        thck = st.selectbox('t', df.loc[(df.Width==width) & (df.Height==height)]['Thickness'].unique())
+        thck = st.selectbox('t (in)', df.loc[(df.Width==width) & (df.Height==height)]['Thickness'].unique())
         # height = st.text_input("h")
         # if height.isalpha():
         #     st.write("Enter a valid number")
@@ -1012,12 +1104,12 @@ elif feed_actuation == 'Motor feed':
         #     pass
         
     with col3:
-        angle_plate_width = st.selectbox('b', df_2.Breadth.unique())
+        angle_plate_width = st.selectbox('b (in)', df_2.Breadth.unique())
         # if angle_plate_width.isalpha():
         #     st.write("Enter a valid number")
         # else:
         #     pass
-        angle_plate_height = st.selectbox('d', df_2.loc[df_2.Breadth==angle_plate_width]['Depth'].unique())
+        angle_plate_height = st.selectbox('d (in)', df_2.loc[df_2.Breadth==angle_plate_width]['Depth'].unique())
         # angle_root_radius = st.text_input("rr")
         # if angle_root_radius.isalpha():
         #     st.write("Enter a valid number")
@@ -1025,15 +1117,15 @@ elif feed_actuation == 'Motor feed':
         #     pass
         
     with col4:
-        angle_plate_thck = st.selectbox('ta', df_2.loc[(df_2.Breadth==angle_plate_width) & (df_2.Depth==angle_plate_height)]['thickness'].unique())
-        angle_toe_radius = st.text_input("rt")
+        angle_plate_thck = st.selectbox('ta (in)', df_2.loc[(df_2.Breadth==angle_plate_width) & (df_2.Depth==angle_plate_height)]['thickness'].unique())
+        angle_toe_radius = st.text_input("rt (in)")
         if angle_toe_radius.isalpha():
             st.write("Enter a valid number")
         else:
             pass
     
     with col5: 
-        angle_root_radius = st.text_input("rr")
+        angle_root_radius = st.text_input("rr (in)")
         if angle_root_radius.isalpha():
             st.write("Enter a valid number")
         else:
@@ -1041,79 +1133,23 @@ elif feed_actuation == 'Motor feed':
         
         
     with col6:
-        plate_thck = st.text_input("pt")
+        plate_thck = st.text_input("pt (in)")
         if plate_thck.isalpha():
             st.write("Enter a valid number")
         else:
             pass
-        dist_bottoms = st.text_input("db")
+        dist_bottoms = st.text_input("db (in)")
         if dist_bottoms.isalpha():
             st.write("Enter a valid number")
         else:
             pass
         
     with col7:
-        plate_height = st.text_input("ph")
+        plate_height = st.text_input("ph (in)")
         if plate_height.isalpha():
             st.write("Enter a valid number")
         else:
-            pass 
-        
-    ## Enter code for sections
-    st.write("")
-    st.write("")
-    
-    col1, col2, col3, col4, col5, col6, col7 = st.columns([1.3,1,1,1,1,1,1])
-    
-    with col1:
-        mast_weight = st.text_input("Mast Assembly weight (kg)")
-        if mast_weight.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        
-    with col2:
-        pulldown = st.text_input("Pulldown")
-        if pulldown.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        
-    with col3:
-        pullback = st.text_input("Pullback")
-        if pullback.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        
-    with col4:
-        torque = st.text_input("Rotary torque")
-        if torque.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        
-    with col5:
-        extending = st.text_input("MRC Extending force")
-        if extending.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        
-    with col6:
-        retracting = st.text_input("MRC Retracting force")
-        if retracting.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        
-    with col7:
-        yield_limit = st.text_input("Yield stress")
-        if yield_limit.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-        
+            pass    
     
     st.write("")
         
@@ -1188,6 +1224,7 @@ elif feed_actuation == 'Motor feed':
             angle_toe_radius = float(angle_toe_radius)
             angle_root_radius = float(angle_root_radius)
             mast_weight = float(mast_weight)
+            mast_weight = mast_weight * 0.453592
             pulldown = float(pulldown)
             pullback = float(pullback)
             torque = float(torque)
@@ -1381,20 +1418,46 @@ elif feed_actuation == 'Motor feed':
                     ['Horizontal Tramming (1.5G Vertical Load)', str(1), hor_tram_prediction_print_LL + ' - ' + hor_tram_prediction_print_UL, hor_tram_def_prediction_print_LL + ' - ' + hor_tram_def_prediction_print_UL, hor_tram_safe], 
                     ['Mast vertical & MRC Extending', str(2), extending_prediction_print_LL + ' - ' + extending_prediction_print_UL, '-', extending_safe],
                     ['Vertical Drilling (120% Pullback and 135% Torque)', str(6), pullback_prediction_print_LL + ' - ' + pullback_prediction_print_UL, '-', pullback_safe]]
-            df = pd.DataFrame(data, columns = ['Load case', 'Loc. No.', 'Stress', 'Deflection', 'Compliant?'])
+            df = pd.DataFrame(data, columns = ['Load case', 'Loc. No.', 'Stress (psi)', 'Deflection (in)', 'Compliant?'])
             def color_unsafe(val):
                 color = 'red' if val == 'No' else 'green'
                 return f'background-color: {color}'
             
             df = df.style.applymap(color_unsafe, subset = ['Compliant?'])
             
-            col1, col2 = st.columns(2)
+            col1, col2 = st.columns([1,1.05])
             with col1:
                 sf = Image.open('Mast static failure locations.png')
                 st.image(sf, use_column_width=True)
                 
             with col2:
                 st.table(df)
+                Dict = {'retract_safe': "Increase C/S-1 or decrease length 'D' (Mast horizontal & MRC retracting)",
+                        'just_lift_safe': "Increase C/S-2 or decrease lengths 'C' and 'D' or increase mast depth (Just about to lift)",
+                        'hor_tram_safe': "Increase C/S-1 or decrease length 'D' or decrease weight (Horizontal Tramming)",
+                        'extending_safe': "Increase C/S-3 and C/S-2 or increase mast depth (Mast vertical & MRC extending)",
+                        'pullback_safe': "Increase C/S-1 or increase mast depth (Vertical drilling - Pullback)"}
+                compliant_set = [retract_safe, just_lift_safe, hor_tram_safe, extending_safe, pullback_safe]
+                recom_set = []
+                for i in range(len(compliant_set)):
+                    if (compliant_set[i] == "No"):
+                        if i == 0:
+                            recom_set.append("retract_safe")
+                        elif i == 1:
+                            recom_set.append("just_lift_safe")
+                        elif i == 2:
+                            recom_set.append("hor_tram_safe")
+                        elif i == 3:
+                            recom_set.append("extending_safe")
+                        elif i == 4:
+                            recom_set.append("pullback_safe")
+                if len(recom_set) != 0:
+                    st.markdown("<h5 style='text-align: center'>Recommendations</h5>", unsafe_allow_html=True)
+                    for i in range(len(recom_set)):
+                        st.write(str(i+1) + "." + " " + Dict.get(recom_set[i]))     
+
+                else:
+                    st.write("<h6 style='text-align: center'>Mast design is static compliant</h6>", unsafe_allow_html=True)
             
             #Code for fatigue models and cumulative damage calculation
             
@@ -1471,6 +1534,13 @@ elif feed_actuation == 'Motor feed':
                 
             with col2:
                 st.table(df_fatigue)
+                if loc_1_safe == "No":
+                    st.markdown("<h5 style='text-align: center'>Recommendations</h5>", unsafe_allow_html=True)
+                    st.write("1. Increase C/S-3 and mast depth or decrease lengths 'C' and 'D'")
+                else:
+                    st.write("<h6 style='text-align: center'>Mast design is fatigue compliant</h6>", unsafe_allow_html=True)
+
+            st.write("")
                 
             env = Environment(loader = FileSystemLoader("."), autoescape = select_autoescape())
             template = env.get_template("template_1.html")
