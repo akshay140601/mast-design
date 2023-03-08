@@ -825,7 +825,7 @@ if feed_actuation == "Cylinder feed":
             lc4a_stress = pulldown_prediction_print_LL + ' - ' + pulldown_prediction_print_UL
             lc4b_stress = pullback_prediction_print_LL + ' - ' + pullback_prediction_print_UL
             cd_loc1 = cd_loc_1_LL + '-' + cd_loc_1_UL
-            mast_weight = mast_weight/0.453592
+            mast_weight = int(mast_weight/0.453592)
             
             html = template.render(
                 mast_width = mast_width,
@@ -1554,7 +1554,7 @@ elif feed_actuation == 'Motor feed':
             lc3b_stress = extending_prediction_print_LL + ' - ' + extending_prediction_print_UL
             lc4b_stress = pullback_prediction_print_LL + ' - ' + pullback_prediction_print_UL
             cd_loc1 = cd_loc_1_LL + '-' + cd_loc_1_UL
-            mast_weight = mast_weight/0.453592
+            mast_weight = int(mast_weight/0.453592)
             
             html = template.render(
                 mast_width = mast_width,
