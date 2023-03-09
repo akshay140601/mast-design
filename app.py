@@ -4,7 +4,7 @@ Created on Mon Jan  9 12:18:07 2023
 
 @author: fl9768
 """
-url = "https://pdfhost.io/v/eTNIl1tye_Standards_for_mast_design"
+#url = "https://pdfhost.io/v/eTNIl1tye_Standards_for_mast_design"
 import pandas as pd
 import streamlit as st
 import pickle
@@ -337,9 +337,10 @@ if feed_actuation == "Cylinder feed":
             pass
         
     st.write("")
-    st.write("")
 
-    col1, col2, col3, col4, col5 = st.columns([1.2,2.1,1,1,1])
+    st.markdown("<h4 style='text-align: center'>Feed cylinder bracket design</h4>", unsafe_allow_html=True)
+
+    col1, col2, col3, col4, col5 = st.columns([1.7,2.1,1,1,1])
     
     with col1:
         bp1 = Image.open('bottom plate - 1.png')
