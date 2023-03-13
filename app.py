@@ -46,12 +46,8 @@ with col2:
 with col3:
     st.image("logo-sandvik.png")
     
-hr_line_style = """
-    <style>
-        <hr style = "height: 10px; border: none; color: #0099ff; background-color: #0099ff;"/>
-    </style>
-"""
-st.markdown("""<hr style = "height: 6px; border: none; color: #0099ff; background-color: #0099ff; margin: -0.3rem -1.5rem -1rem -1rem"/>""", unsafe_allow_html=True)
+
+st.markdown("""<hr style = "height: 5px; border: none; color: #0099ff; background-color: #0099ff; margin: -0.3rem -1.5rem -1rem -1rem"/>""", unsafe_allow_html=True)
 
 st.write("")
 regex = re.compile('[@_!#$%^&*()<>?/\|}{~:,]')
@@ -235,7 +231,7 @@ if feed_actuation == "Cylinder feed":
 # if Next:
 #     if feed_actuation == 'Cylinder feed':
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns([1.2,1.2,1])
     
     with col1:
         st.markdown("<h5 style='text-align: center'>C/S - 1 (Crown to mast rest)</h5>", unsafe_allow_html=True)
@@ -263,7 +259,7 @@ if feed_actuation == "Cylinder feed":
         st.image(cs3, use_column_width=True)
         st.markdown("<h5 style='text-align: center'>Long member with pivot plates</h5>", unsafe_allow_html=True)
         
-    col1, col2, col3, col4, col5, col6, col7 = st.columns([0.6,0.6,0.4,0.4,0.4,0.5,0.5])
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
     df = pd.read_excel("Long member cross sections.xlsx")
     df_2 = pd.read_excel("Angle plate cross sections.xlsx")
     with col1:
@@ -303,21 +299,9 @@ if feed_actuation == "Cylinder feed":
         
     with col4:
         angle_plate_thck = st.selectbox('ta (in)', df_2.loc[(df_2.Breadth==angle_plate_width) & (df_2.Depth==angle_plate_height)]['thickness'].unique())
-        angle_toe_radius = st.text_input("rt (in)")
-        if angle_toe_radius.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-    
-    with col5: 
-        angle_root_radius = st.text_input("rr (in)")
-        if angle_root_radius.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
         
         
-    with col6:
+    with col5:
         plate_thck = st.text_input("pt (in)")
         if plate_thck.isalpha():
             st.write("Enter a valid number")
@@ -329,7 +313,7 @@ if feed_actuation == "Cylinder feed":
         else:
             pass
         
-    with col7:
+    with col6:
         plate_height = st.text_input("ph (in)")
         if plate_height.isalpha():
             st.write("Enter a valid number")
@@ -409,8 +393,8 @@ if feed_actuation == "Cylinder feed":
     
     if predict:
         variables = [mast_width, mast_depth, A, B, C, D, dist_bottoms, plate_thck, plate_height, ff_plate_thck,
-                     ff_plate_length, ff_plate_height, angle_toe_radius, 
-                     angle_root_radius, mast_weight, pulldown, pullback, torque, extending, retracting, yield_limit,
+                     ff_plate_length, ff_plate_height,
+                     mast_weight, pulldown, pullback, torque, extending, retracting, yield_limit,
                      washer_1_thck, washer_2_thck]
         
         proceed = 'Yes'
@@ -456,8 +440,12 @@ if feed_actuation == "Cylinder feed":
             angle_plate_width = float(angle_plate_width)
             angle_plate_height = float(angle_plate_height)
             angle_plate_thck = float(angle_plate_thck)
-            angle_toe_radius = float(angle_toe_radius)
-            angle_root_radius = float(angle_root_radius)
+            if angle_plate_thck > 0.0625:
+                angle_toe_radius = float(angle_plate_thck - 0.0625)
+                angle_root_radius = float(angle_plate_thck - 0.0625)
+            else:
+                angle_toe_radius = 0
+                angle_root_radius = 0
             mast_weight = float(mast_weight)
             mast_weight = mast_weight * 0.453592
             pulldown = float(pulldown)
@@ -703,7 +691,7 @@ if feed_actuation == "Cylinder feed":
                         'just_lift_safe': "Increase C/S-2 or decrease lengths 'C' and 'D' or increase mast depth (Just about to lift)",
                         'hor_tram_safe': "Increase C/S-1 or decrease length 'D' or decrease weight (Horizontal Tramming)",
                         'extending_safe': "Increase C/S-3 and C/S-2 or increase mast depth (Mast vertical & MRC extending)",
-                        'pulldown_safe': "Increase pt and H or decrease L (Vertical drilling - Pulldown)",
+                        'pulldown_safe': "Increase tp and H or decrease L (Vertical drilling - Pulldown)",
                         'pullback_safe': "Increase C/S-1 or increase mast depth (Vertical drilling - Pullback)"}
                 compliant_set = [retract_safe, just_lift_safe, hor_tram_safe, extending_safe, pulldown_safe, pullback_safe]
                 recom_set = []
@@ -722,12 +710,14 @@ if feed_actuation == "Cylinder feed":
                         elif i == 5:
                             recom_set.append("pullback_safe")
                 if len(recom_set) != 0:
-                    st.markdown("<h5 style='text-align: center'>Recommendations</h5>", unsafe_allow_html=True)
+                    st.markdown("<h5 style='text-align: center; color: #ff6d00'>Recommendations</h5>", unsafe_allow_html=True)
+                    
+                    #st.markdown(recom_style, unsafe_allow_html=True)
                     for i in range(len(recom_set)):
-                        st.write(str(i+1) + "." + " " + Dict.get(recom_set[i]))     
+                        st.markdown(f'<p style="color:#ff6d00;font-size:16px;">{str(i+1) + "." + " " + Dict.get(recom_set[i])}</p>', unsafe_allow_html=True)   
 
                 else:
-                    st.write("<h6 style='text-align: center'>Mast design is static compliant</h6>", unsafe_allow_html=True)              
+                    st.write("<h5 style='text-align: center; color: green'>Mast design is static compliant</h5>", unsafe_allow_html=True)              
                     
 
                 
@@ -807,10 +797,10 @@ if feed_actuation == "Cylinder feed":
             with col2:
                 st.table(df_fatigue)
                 if loc_1_safe == "No":
-                    st.markdown("<h5 style='text-align: center'>Recommendations</h5>", unsafe_allow_html=True)
-                    st.write("1. Increase C/S-3 and mast depth or decrease lengths 'C' and 'D'")
+                    st.markdown("<h5 style='text-align: center; color: #ff6d00'>Recommendations</h5>", unsafe_allow_html=True)
+                    st.markdown(f'''<p style="color:#ff6d00;font-size:16px;">{"1. Increase C/S-3 and mast depth or decrease lengths 'C' and 'D'"}</p>''', unsafe_allow_html=True)
                 else:
-                    st.write("<h6 style='text-align: center'>Mast design is fatigue compliant</h6>", unsafe_allow_html=True)    
+                    st.write("<h5 style='text-align: center; color: green'>Mast design is fatigue compliant</h5>", unsafe_allow_html=True)    
                 
             st.write("")
                 
@@ -1055,7 +1045,7 @@ elif feed_actuation == 'Motor feed':
     
     st.markdown("<h4 style='text-align: center'>For section modulus calculation</h4>", unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns([1.2,1.2,1])
     
     with col1:
         st.markdown("<h5 style='text-align: center'>C/S - 1 (Crown to mast rest)</h5>", unsafe_allow_html=True)
@@ -1067,20 +1057,25 @@ elif feed_actuation == 'Motor feed':
         st.markdown("<h5 style='text-align: center'>C/S - 3 (Pivot region)</h5>", unsafe_allow_html=True)
     
     
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns([1.2,1.2,1])
     with col1:
         cs1 = Image.open('cross section - 1.png')
         st.image(cs1, use_column_width=True)
+        st.markdown("<h5 style='text-align: center'>Long member C/S</h5>", unsafe_allow_html=True)
         
     with col2:
         cs2 = Image.open('cross section - 2.png')
         st.image(cs2, use_column_width=True)
+        st.markdown("<h5 style='text-align: center'>Long member with angle plate</h5>", unsafe_allow_html=True)
         
     with col3:
         cs3 = Image.open('cross section - 3.png')
         st.image(cs3, use_column_width=True)
+        st.markdown("<h5 style='text-align: center'>Long member with pivot plates</h5>", unsafe_allow_html=True)
+
+    
         
-    col1, col2, col3, col4, col5, col6, col7 = st.columns([1.5,1.5,1,1,1,1.5,1.5])
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
     df = pd.read_excel("Long member cross sections.xlsx")
     df_2 = pd.read_excel("Angle plate cross sections.xlsx")
     with col1:
@@ -1120,21 +1115,9 @@ elif feed_actuation == 'Motor feed':
         
     with col4:
         angle_plate_thck = st.selectbox('ta (in)', df_2.loc[(df_2.Breadth==angle_plate_width) & (df_2.Depth==angle_plate_height)]['thickness'].unique())
-        angle_toe_radius = st.text_input("rt (in)")
-        if angle_toe_radius.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
-    
-    with col5: 
-        angle_root_radius = st.text_input("rr (in)")
-        if angle_root_radius.isalpha():
-            st.write("Enter a valid number")
-        else:
-            pass
         
         
-    with col6:
+    with col5:
         plate_thck = st.text_input("pt (in)")
         if plate_thck.isalpha():
             st.write("Enter a valid number")
@@ -1146,7 +1129,7 @@ elif feed_actuation == 'Motor feed':
         else:
             pass
         
-    with col7:
+    with col6:
         plate_height = st.text_input("ph (in)")
         if plate_height.isalpha():
             st.write("Enter a valid number")
@@ -1176,8 +1159,7 @@ elif feed_actuation == 'Motor feed':
         predict = st.button('PREDICT')  
     
     if predict:
-        variables = [mast_width, mast_depth, A, B, C, D, dist_bottoms, plate_thck, plate_height,
-                     angle_toe_radius, angle_root_radius, mast_weight,
+        variables = [mast_width, mast_depth, A, B, C, D, dist_bottoms, plate_thck, plate_height, mast_weight,
                      pulldown, pullback, torque, extending, retracting, yield_limit]
         
         proceed = 'Yes'
@@ -1223,8 +1205,12 @@ elif feed_actuation == 'Motor feed':
             angle_plate_width = float(angle_plate_width)
             angle_plate_height = float(angle_plate_height)
             angle_plate_thck = float(angle_plate_thck)
-            angle_toe_radius = float(angle_toe_radius)
-            angle_root_radius = float(angle_root_radius)
+            if angle_plate_thck > 0.0625:
+                angle_toe_radius = float(angle_plate_thck - 0.0625)
+                angle_root_radius = float(angle_plate_thck - 0.0625)
+            else:
+                angle_toe_radius = 0
+                angle_root_radius = 0
             mast_weight = float(mast_weight)
             mast_weight = mast_weight * 0.453592
             pulldown = float(pulldown)
@@ -1454,12 +1440,11 @@ elif feed_actuation == 'Motor feed':
                         elif i == 4:
                             recom_set.append("pullback_safe")
                 if len(recom_set) != 0:
-                    st.markdown("<h5 style='text-align: center'>Recommendations</h5>", unsafe_allow_html=True)
+                    st.markdown("<h5 style='text-align: center; color: #ff6d00'>Recommendations</h5>", unsafe_allow_html=True)
                     for i in range(len(recom_set)):
-                        st.write(str(i+1) + "." + " " + Dict.get(recom_set[i]))     
-
+                        st.markdown(f'<p style="color:#ff6d00; font-size:16px;">{str(i+1) + "." + " " + Dict.get(recom_set[i])}</p>', unsafe_allow_html=True) 
                 else:
-                    st.write("<h6 style='text-align: center'>Mast design is static compliant</h6>", unsafe_allow_html=True)
+                    st.write("<h5 style='text-align: center; color: green'>Mast design is static compliant</h5>", unsafe_allow_html=True)
             
             #Code for fatigue models and cumulative damage calculation
             
@@ -1537,10 +1522,10 @@ elif feed_actuation == 'Motor feed':
             with col2:
                 st.table(df_fatigue)
                 if loc_1_safe == "No":
-                    st.markdown("<h5 style='text-align: center'>Recommendations</h5>", unsafe_allow_html=True)
-                    st.write("1. Increase C/S-3 and mast depth or decrease lengths 'C' and 'D'")
+                    st.markdown("<h5 style='text-align: center; color: #ff6d00'>Recommendations</h5>", unsafe_allow_html=True)
+                    st.markdown(f'''<p style="color:#ff6d00;font-size:16px;">{"1. Increase C/S-3 and mast depth or decrease lengths 'C' and 'D'"}</p>''', unsafe_allow_html=True)
                 else:
-                    st.write("<h6 style='text-align: center'>Mast design is fatigue compliant</h6>", unsafe_allow_html=True)
+                    st.write("<h5 style='text-align: center; color: green'>Mast design is fatigue compliant</h5>", unsafe_allow_html=True)  
 
             st.write("")
                 
